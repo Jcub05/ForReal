@@ -43,7 +43,7 @@ brave_api_key = BRAVE_API_KEY
 print("✓ Brave API key loaded")
 
 # Create Gemini model instance
-model = genai.GenerativeModel('gemini-3-flash-preview')
+model = genai.GenerativeModel('gemini-2.0-flash-lite')
 print("✓ Gemini model configured")
 
 # Thread pool for async operations
