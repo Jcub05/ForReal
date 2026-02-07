@@ -32,15 +32,20 @@ class MediaCheckService:
             print(f"Checking {media_type}: {media_url[:100]}...")
             check_start = time.time()
             
+            # Hive API expects 'token' in lowercase and the key directly
             headers = {
-                "Authorization": f"Token {settings.HIVE_API_KEY}",
-                "Content-Type": "application/json"
+                "Authorization": f"token {settings.HIVE_API_KEY}",
+                "Content-Type": "application/json",
+                "Accept": "application/json"
             }
             
             payload = {
                 "url": media_url,
                 "classes": ["ai_generated"]
             }
+            
+            print(f"🔑 Using API key: {settings.HIVE_API_KEY[:10]}...")
+            print(f"📤 Request payload: {payload}")
             
             loop = asyncio.get_event_loop()
             response = await loop.run_in_executor(
@@ -52,8 +57,18 @@ class MediaCheckService:
                     timeout=settings.HIVE_TIMEOUT
                 )
             )
+            
+            print(f"📥 Response status: {response.status_code}")
+            print(f"📥 Response headers: {response.headers}")
+            
+            if response.status_code == 403:
+                print("❌ 403 Forbidden - API key might be invalid")
+                print(f"Response body: {response.text[:500]}")
+                raise ValueError(f"Hive API authentication failed. Please check your API key. Response: {response.text[:200]}")
+            
             response.raise_for_status()
             data = response.json()
+            print(f"✓ Response data received: {data}")
             
             check_time = time.time() - check_start
             print(f"⏱️  Hive AI check took: {check_time:.2f}s")

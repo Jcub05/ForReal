@@ -343,35 +343,81 @@ function showFactCheckResult(tweet, result) {
       resultDiv.innerHTML = '<div class="truthlens-loading-small">Checking...</div>';
       
       try {
-        // Extract media URL
-        const mediaElement = tweet.querySelector('[data-testid="tweetPhoto"] img, [data-testid="tweetVideo"] video');
-        if (!mediaElement) {
-          resultDiv.innerHTML = '<div class="truthlens-error">Could not find media</div>';
+        console.log('🔍 TruthLens: Starting media check...');
+        
+        // Extract media URL - try multiple selectors
+        let mediaElement = tweet.querySelector('[data-testid="tweetPhoto"] img');
+        let mediaType = 'image';
+        let mediaUrl = null;
+        
+        if (mediaElement) {
+          // Found image
+          mediaUrl = mediaElement.src;
+          console.log('✓ Found image:', mediaUrl);
+        } else {
+          // Try video
+          console.log('No image found, trying video...');
+          mediaElement = tweet.querySelector('[data-testid="tweetVideo"] video');
+          if (mediaElement) {
+            mediaType = 'video';
+            mediaUrl = mediaElement.poster || mediaElement.src;
+            console.log('✓ Found video element');
+            console.log('  - poster:', mediaElement.poster);
+            console.log('  - src:', mediaElement.src);
+            console.log('  - Using URL:', mediaUrl);
+          } else {
+            // Try finding any img in the tweet
+            console.log('No video found, trying any image...');
+            mediaElement = tweet.querySelector('img[src*="pbs.twimg.com"]');
+            if (mediaElement) {
+              mediaUrl = mediaElement.src;
+              console.log('✓ Found Twitter CDN image:', mediaUrl);
+            }
+          }
+        }
+        
+        if (!mediaUrl) {
+          console.error('❌ Could not extract media URL from tweet');
+          console.log('Tweet element:', tweet);
+          console.log('All images in tweet:', tweet.querySelectorAll('img'));
+          console.log('All videos in tweet:', tweet.querySelectorAll('video'));
+          resultDiv.innerHTML = '<div class="truthlens-error">Could not extract media URL</div>';
           return;
         }
         
-        const mediaUrl = mediaElement.src || mediaElement.poster;
-        const mediaType = mediaElement.tagName.toLowerCase() === 'video' ? 'video' : 'image';
+        console.log('📤 Sending to backend:', { media_url: mediaUrl, media_type: mediaType });
         
         // Call backend
-        const response = await fetch(`${API_ENDPOINT.replace('/fact-check', '/check-media')}`, {
+        const apiUrl = `${API_ENDPOINT.replace('/fact-check', '/check-media')}`;
+        console.log('API endpoint:', apiUrl);
+        
+        const response = await fetch(apiUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ media_url: mediaUrl, media_type: mediaType })
         });
         
-        if (!response.ok) throw new Error('Media check failed');
+        console.log('📥 Response status:', response.status);
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('❌ API error:', errorText);
+          throw new Error(`API returned ${response.status}: ${errorText}`);
+        }
         
         const data = await response.json();
+        console.log('✓ Response data:', data);
         
         // Display result
         const icon = data.ai_generated ? '🤖' : '✅';
         const confidencePercent = Math.round(data.confidence * 100);
         resultDiv.innerHTML = `<div class="truthlens-media-result-text">${icon} ${data.message} (${confidencePercent}% confidence)</div>`;
+        console.log('✓ Media check complete');
         
       } catch (error) {
-        console.error('Media check error:', error);
-        resultDiv.innerHTML = '<div class="truthlens-error">Check failed. Try again.</div>';
+        console.error('❌ Media check error:', error);
+        console.error('Error details:', error.message);
+        resultDiv.innerHTML = `<div class="truthlens-error">Check failed: ${error.message}</div>`;
       }
     });
   }
