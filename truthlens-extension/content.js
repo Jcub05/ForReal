@@ -310,11 +310,32 @@ function showFactCheckResult(tweet, result) {
     biasHTML = `<div class="truthlens-bias">⚠️ ${biasLevel} detected in this post</div>`;
   }
   
-  // Detect if tweet has media
-  const hasMedia = tweet.querySelector('[data-testid="tweetPhoto"], [data-testid="tweetVideo"]');
+  // Detect if tweet has images (not videos)
+  // Videos may have tweetPhoto for poster, so check for video first
+  const hasVideo = tweet.querySelector('[data-testid="tweetVideo"]');
+  const images = tweet.querySelectorAll('[data-testid="tweetPhoto"] img');
   let mediaCheckHTML = '';
-  if (hasMedia) {
-    mediaCheckHTML = '<button class="truthlens-media-check-btn">🤖 Check if AI-generated</button><div class="truthlens-media-result"></div>';
+  
+  console.log('TruthLens: Checking media - hasVideo:', !!hasVideo, 'images found:', images.length);
+  
+  if (images.length > 0 && !hasVideo) {
+    // Show buttons for each image
+    console.log('TruthLens: Adding media check buttons for', images.length, 'image(s)');
+    
+    if (images.length === 1) {
+      // Single image - simple button
+      mediaCheckHTML = '<button class="truthlens-media-check-btn" data-image-index="0">🖼️ Check Image AI</button><div class="truthlens-media-result"></div>';
+    } else {
+      // Multiple images - numbered buttons
+      mediaCheckHTML = '<div class="truthlens-media-check-container">';
+      mediaCheckHTML += '<div style="font-size: 13px; color: rgb(83, 100, 113); margin-bottom: 6px;">Select image to check:</div>';
+      for (let i = 0; i < images.length; i++) {
+        mediaCheckHTML += `<button class="truthlens-media-check-btn truthlens-media-check-btn-small" data-image-index="${i}">Image ${i + 1}</button> `;
+      }
+      mediaCheckHTML += '</div><div class="truthlens-media-result"></div>';
+    }
+  } else if (hasVideo) {
+    console.log('TruthLens: Video detected - NOT adding media check button');
   }
   
   overlay.innerHTML = `
@@ -356,10 +377,10 @@ function showFactCheckResult(tweet, result) {
     overlay.remove();
   });
   
-  // Add media check button functionality
-  const mediaCheckBtn = overlay.querySelector('.truthlens-media-check-btn');
-  if (mediaCheckBtn) {
-    mediaCheckBtn.addEventListener('click', async (e) => {
+  // Add media check button functionality (for all buttons)
+  const mediaCheckBtns = overlay.querySelectorAll('.truthlens-media-check-btn');
+  mediaCheckBtns.forEach(btn => {
+    btn.addEventListener('click', async (e) => {
       e.stopPropagation();
       e.preventDefault();
       
@@ -369,56 +390,48 @@ function showFactCheckResult(tweet, result) {
       try {
         console.log('🔍 TruthLens: Starting media check...');
         
-        // Extract media URL - try multiple selectors
-        let mediaElement = tweet.querySelector('[data-testid="tweetPhoto"] img');
-        let mediaType = 'image';
-        let mediaUrl = null;
+        // Get the image index from the button
+        const imageIndex = parseInt(e.target.getAttribute('data-image-index') || '0');
+        console.log('Selected image index:', imageIndex);
         
-        if (mediaElement) {
-          // Found image
-          mediaUrl = mediaElement.src;
-          console.log('✓ Found image:', mediaUrl);
-        } else {
-          // Try video
-          console.log('No image found, trying video...');
-          mediaElement = tweet.querySelector('[data-testid="tweetVideo"] video');
-          if (mediaElement) {
-            mediaType = 'video';
-            mediaUrl = mediaElement.poster || mediaElement.src;
-            console.log('✓ Found video element');
-            console.log('  - poster:', mediaElement.poster);
-            console.log('  - src:', mediaElement.src);
-            console.log('  - Using URL:', mediaUrl);
-          } else {
-            // Try finding any img in the tweet
-            console.log('No video found, trying any image...');
-            mediaElement = tweet.querySelector('img[src*="pbs.twimg.com"]');
-            if (mediaElement) {
-              mediaUrl = mediaElement.src;
-              console.log('✓ Found Twitter CDN image:', mediaUrl);
-            }
-          }
+        // Get all images in the tweet
+        const allImages = tweet.querySelectorAll('[data-testid="tweetPhoto"] img');
+        
+        if (allImages.length === 0) {
+          console.error('❌ No images found in tweet');
+          resultDiv.innerHTML = '<div class="truthlens-error">Could not find images</div>';
+          return;
         }
+        
+        // Get the specific image selected by user
+        const mediaElement = allImages[imageIndex];
+        if (!mediaElement) {
+          console.error('❌ Invalid image index:', imageIndex);
+          resultDiv.innerHTML = '<div class="truthlens-error">Image not found</div>';
+          return;
+        }
+        
+        const mediaUrl = mediaElement.src;
+        console.log('✓ Found image:', mediaUrl);
         
         if (!mediaUrl) {
           console.error('❌ Could not extract media URL from tweet');
           console.log('Tweet element:', tweet);
           console.log('All images in tweet:', tweet.querySelectorAll('img'));
-          console.log('All videos in tweet:', tweet.querySelectorAll('video'));
-          resultDiv.innerHTML = '<div class="truthlens-error">Could not extract media URL</div>';
+          resultDiv.innerHTML = '<div class="truthlens-error">Could not extract image URL</div>';
           return;
         }
         
-        console.log('📤 Sending to backend:', { media_url: mediaUrl, media_type: mediaType });
+        console.log('📤 Sending to backend:', { media_url: mediaUrl, media_type: 'image' });
         
-        // Call backend
+        // Call backend (always use 'image' type now)
         const apiUrl = `${API_ENDPOINT.replace('/fact-check', '/check-media')}`;
         console.log('API endpoint:', apiUrl);
         
         const response = await fetch(apiUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ media_url: mediaUrl, media_type: mediaType })
+          body: JSON.stringify({ media_url: mediaUrl, media_type: 'image' })
         });
         
         console.log('📥 Response status:', response.status);
@@ -432,10 +445,11 @@ function showFactCheckResult(tweet, result) {
         const data = await response.json();
         console.log('✓ Response data:', data);
         
-        // Display result
-        const icon = data.ai_generated ? '🤖' : '✅';
+        // Display result with verdict
+        const icon = data.ai_generated ? '🤖' : '👤';
+        const verdict = data.ai_generated ? 'AI-generated' : 'Human-created';
         const confidencePercent = Math.round(data.confidence * 100);
-        resultDiv.innerHTML = `<div class="truthlens-media-result-text">${icon} ${data.message} (${confidencePercent}% confidence)</div>`;
+        resultDiv.innerHTML = `<div class="truthlens-media-result-text">${icon} ${verdict} (${confidencePercent}% confidence)</div>`;
         console.log('✓ Media check complete');
         
       } catch (error) {
@@ -444,7 +458,7 @@ function showFactCheckResult(tweet, result) {
         resultDiv.innerHTML = `<div class="truthlens-error">Check failed: ${error.message}</div>`;
       }
     });
-  }
+  });
   
   // Find tweet text container and append below it
   const tweetTextContainer = tweet.querySelector('[data-testid="tweetText"]');

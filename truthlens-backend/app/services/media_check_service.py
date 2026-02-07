@@ -28,8 +28,25 @@ class MediaCheckService:
         if not settings.AIORNOT_API_KEY:
             raise ValueError("AIORNOT_API_KEY not configured")
         
+        # AI or Not only supports images, not videos
+        if media_type == "video":
+            print(f"⚠️  Video detection not supported by AI or Not API")
+            return MediaCheckResponse(
+                ai_generated=False,
+                confidence=0.0,
+                media_type=media_type,
+                message="Video detection not available (images only)"
+            )
+        
         try:
             print(f"Checking {media_type}: {media_url[:100]}...")
+            
+            # Validate URL
+            if not media_url or not media_url.startswith('http'):
+                raise ValueError(f"Invalid media URL: {media_url}")
+            
+            print(f"📷 Image URL: {media_url}")
+            
             check_start = time.time()
             
             # AI or Not API uses simple Bearer token authentication
@@ -72,15 +89,33 @@ class MediaCheckService:
             
             response.raise_for_status()
             data = response.json()
-            print(f"✓ Response data received: {data}")
+            print(f"✓ Response data received:")
+            print(f"   Full response: {data}")
             
             check_time = time.time() - check_start
             print(f"⏱️  AI or Not check took: {check_time:.2f}s")
             
-            # Parse AI or Not response
-            # Response format: {"report": {"verdict": "ai" or "human", "confidence": 0.0-1.0}}
-            verdict = data.get("report", {}).get("verdict", "unknown")
-            confidence = data.get("report", {}).get("confidence", 0.5)
+            # Parse AI or Not response - correct structure
+            # Response: {"report": {"verdict": "ai"/"human", "ai": {"confidence": 0.x}, "human": {"confidence": 0.x}}}
+            verdict = "unknown"
+            confidence = 0.5
+            
+            if "report" in data:
+                print(f"   Found 'report' key")
+                report = data["report"]
+                verdict = report.get("verdict", "unknown")
+                
+                # Get confidence from the correct nested structure
+                if verdict == "ai":
+                    confidence = report.get("ai", {}).get("confidence", 0.5)
+                elif verdict == "human":
+                    confidence = report.get("human", {}).get("confidence", 0.5)
+                else:
+                    print(f"   WARNING: Unknown verdict: {verdict}")
+            else:
+                print(f"   WARNING: No 'report' key found. Keys: {list(data.keys())}")
+            
+            print(f"   Parsed - Verdict: {verdict}, Confidence: {confidence:.2%}")
             
             ai_generated = verdict == "ai"
             
