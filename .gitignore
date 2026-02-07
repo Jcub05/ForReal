@@ -51,3 +51,6 @@ Thumbs.db
 # Chrome extension (keep source, ignore packaged versions)
 *.crx
 *.pem
+
+/node_modules
+/dist
