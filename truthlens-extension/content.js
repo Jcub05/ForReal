@@ -319,21 +319,9 @@ function showFactCheckResult(tweet, result) {
   console.log('TruthLens: Checking media - hasVideo:', !!hasVideo, 'images found:', images.length);
   
   if (images.length > 0 && !hasVideo) {
-    // Show buttons for each image
-    console.log('TruthLens: Adding media check buttons for', images.length, 'image(s)');
-    
-    if (images.length === 1) {
-      // Single image - simple button
-      mediaCheckHTML = '<button class="truthlens-media-check-btn" data-image-index="0">🖼️ Check Image AI</button><div class="truthlens-media-result"></div>';
-    } else {
-      // Multiple images - numbered buttons
-      mediaCheckHTML = '<div class="truthlens-media-check-container">';
-      mediaCheckHTML += '<div style="font-size: 13px; color: rgb(83, 100, 113); margin-bottom: 6px;">Select image to check:</div>';
-      for (let i = 0; i < images.length; i++) {
-        mediaCheckHTML += `<button class="truthlens-media-check-btn truthlens-media-check-btn-small" data-image-index="${i}">Image ${i + 1}</button> `;
-      }
-      mediaCheckHTML += '</div><div class="truthlens-media-result"></div>';
-    }
+    // Always show single button initially
+    console.log('TruthLens: Adding media check button for', images.length, 'image(s)');
+    mediaCheckHTML = '<button class="truthlens-media-check-btn" data-image-count="' + images.length + '">🖼️ Check Image AI</button><div class="truthlens-media-result"></div>';
   } else if (hasVideo) {
     console.log('TruthLens: Video detected - NOT adding media check button');
   }
@@ -385,14 +373,50 @@ function showFactCheckResult(tweet, result) {
       e.preventDefault();
       
       const resultDiv = overlay.querySelector('.truthlens-media-result');
-      resultDiv.innerHTML = '<div class="truthlens-loading-small">Checking...</div>';
+      
+      // Check if this is the initial button (has data-image-count) or a numbered button (has data-image-index)
+      const imageCount = parseInt(e.target.getAttribute('data-image-count'));
+      const imageIndex = e.target.getAttribute('data-image-index');
+      
+      // If this is the initial button and there are multiple images, show numbered buttons
+      if (imageCount && imageCount > 1 && !imageIndex) {
+        console.log('TruthLens: Expanding to show', imageCount, 'image selection buttons');
+        
+        // Replace the button with numbered buttons
+        let numberedButtonsHTML = '<div class="truthlens-media-check-container">';
+        numberedButtonsHTML += '<div style="font-size: 13px; color: rgb(83, 100, 113); margin-bottom: 6px;">Select image to check:</div>';
+        for (let i = 0; i < imageCount; i++) {
+          numberedButtonsHTML += `<button class="truthlens-media-check-btn truthlens-media-check-btn-small" data-image-index="${i}">Image ${i + 1}</button> `;
+        }
+        numberedButtonsHTML += '</div>';
+        
+        e.target.outerHTML = numberedButtonsHTML;
+        
+        // Attach click handlers to new buttons
+        const newBtns = overlay.querySelectorAll('.truthlens-media-check-btn');
+        newBtns.forEach(newBtn => {
+          newBtn.addEventListener('click', async (e2) => {
+            e2.stopPropagation();
+            e2.preventDefault();
+            
+            const idx = parseInt(e2.target.getAttribute('data-image-index'));
+            await performMediaCheck(idx);
+          });
+        });
+        
+        return;
+      }
+      
+      // Otherwise proceed with the check
+      const idx = parseInt(imageIndex || '0');
+      await performMediaCheck(idx);
+      
+      async function performMediaCheck(selectedIndex) {
+        resultDiv.innerHTML = '<div class="truthlens-loading-small">Checking...</div>';
       
       try {
         console.log('🔍 TruthLens: Starting media check...');
-        
-        // Get the image index from the button
-        const imageIndex = parseInt(e.target.getAttribute('data-image-index') || '0');
-        console.log('Selected image index:', imageIndex);
+        console.log('Selected image index:', selectedIndex);
         
         // Get all images in the tweet
         const allImages = tweet.querySelectorAll('[data-testid="tweetPhoto"] img');
@@ -404,9 +428,9 @@ function showFactCheckResult(tweet, result) {
         }
         
         // Get the specific image selected by user
-        const mediaElement = allImages[imageIndex];
+        const mediaElement = allImages[selectedIndex];
         if (!mediaElement) {
-          console.error('❌ Invalid image index:', imageIndex);
+          console.error('❌ Invalid image index:', selectedIndex);
           resultDiv.innerHTML = '<div class="truthlens-error">Image not found</div>';
           return;
         }
@@ -456,6 +480,7 @@ function showFactCheckResult(tweet, result) {
         console.error('❌ Media check error:', error);
         console.error('Error details:', error.message);
         resultDiv.innerHTML = `<div class="truthlens-error">Check failed: ${error.message}</div>`;
+      }
       }
     });
   });
