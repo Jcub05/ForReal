@@ -1,22 +1,40 @@
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-import google.generativeai as genai
-import requests
-import os
-from typing import List, Optional
-import asyncio
-from concurrent.futures import ThreadPoolExecutor
-from dotenv import load_dotenv
-import time
+"""
+⚠️  DEPRECATED: This file is maintained for backward compatibility.
+    
+    The application has been refactored into a modular architecture.
+    Please use `python -m app.main` to run the new version.
+    
+    New structure:
+    - app/main.py: Entry point
+    - app/routers/: API endpoints
+    - app/services/: Business logic
+    - app/models/: Data models
+    - app/platforms/: Platform-specific implementations
+    
+    See ARCHITECTURE.md for details.
+"""
 
-# Load environment variables from .env file
-load_dotenv()
-print("✓ Environment variables loaded")
+print("\n" + "=" * 60)
+print("⚠️  Using legacy entry point")
+print("=" * 60)
+print("The application has been refactored into a modular structure.")
+print("This file redirects to the new architecture.")
+print("For more details, see ARCHITECTURE.md")
+print("=" * 60 + "\n")
 
-# Initialize FastAPI app
-app = FastAPI(title="TruthLens API", version="1.0.0")
-print("✓ FastAPI app initialized")
+# Import and run the new application
+from app.main import app
+
+if __name__ == "__main__":
+    import uvicorn
+    from app.config import settings
+    
+    uvicorn.run(
+        "app.main:app",
+        host=settings.HOST,
+        port=settings.PORT,
+        reload=True
+    )
 
 # Configure CORS for Chrome Extension
 app.add_middleware(
