@@ -104,7 +104,7 @@ async def fact_check(request: FactCheckRequest):
         search_start = time.time()
         search_results = await search_claim(tweet_text)
         search_time = time.time() - search_start
-        print(f"⏱️  Exa search took: {search_time:.2f}s")
+        print(f"⏱️  Brave search took: {search_time:.2f}s")
         
         if not search_results:
             return FactCheckResponse(
