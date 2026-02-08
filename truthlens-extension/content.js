@@ -548,7 +548,7 @@ async function handleSelectionVerification(text) {
   // Show loading overlay
   showGenericOverlay({
     label: "Analyzing...",
-    explanation: "Verifying your selected text with TruthLens...",
+    explanation: `<span style="font-size: 17px;">Verifying your selected text with</span> <img src="${chrome.runtime.getURL('icons/ForReal-logo-long-blue-cropped.jpg')}" alt="ForReal" style="height: 17px; vertical-align: 0px; margin-left: 4px;">`,
     sources: [],
     isLoading: true
   });

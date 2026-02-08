@@ -36,5 +36,14 @@
       "48": "icons/forreal-48.png",
       "128": "icons/forreal-128.png"
     }
-  }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "icons/ForReal-logo-long.jpg",
+        "icons/ForReal-logo-long-blue-cropped.jpg"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ]
 }
