@@ -10,6 +10,7 @@ from typing import Optional
 load_dotenv()
 
 
+
 class Settings:
     """Application settings loaded from environment variables."""
     

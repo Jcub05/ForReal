@@ -87,7 +87,7 @@ class TTSService:
         # Request body
         payload = {
             "text": text,
-            "model_id": "eleven_monolingual_v1",  # Standard English model
+            "model_id": "eleven_multilingual_v2",  # Better quality model
             "voice_settings": {
                 "stability": 0.5,  # Balanced stability
                 "similarity_boost": 0.75  # Good clarity
