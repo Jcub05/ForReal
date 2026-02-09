@@ -1,4 +1,4 @@
-# ForReal 🔍
+![ForReal](image-url)
 
 **Real-time AI Fact-Checking & Media Verification for X (Twitter)**
 
