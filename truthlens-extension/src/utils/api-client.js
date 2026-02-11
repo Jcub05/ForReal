@@ -9,15 +9,26 @@ async function factCheckTweet(text) {
     console.log('TruthLens: Fetching from:', API_ENDPOINT);
     console.log('TruthLens: Request body:', { text });
 
+    // Get user ID for rate limiting
+    const userId = await getUserId();
+
     const response = await fetch(API_ENDPOINT, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'X-User-ID': userId
         },
         body: JSON.stringify({ text })
     });
 
     console.log('TruthLens: Response status:', response.status);
+
+    // Handle rate limit exceeded
+    if (response.status === 429) {
+        const errorData = await response.json();
+        console.warn('TruthLens: Rate limit exceeded:', errorData);
+        throw new Error('RATE_LIMIT_EXCEEDED');
+    }
 
     if (!response.ok) {
         throw new Error(`API error: ${response.status}`);
@@ -40,13 +51,25 @@ async function checkMedia(mediaUrl, mediaType = 'image') {
     const apiUrl = API_ENDPOINT.replace('/fact-check', '/check-media');
     console.log('API endpoint:', apiUrl);
 
+    const userId = await getUserId();
+
     const response = await fetch(apiUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': userId
+        },
         body: JSON.stringify({ media_url: mediaUrl, media_type: mediaType })
     });
 
     console.log('📥 Response status:', response.status);
+
+    // Handle coming soon (503)
+    if (response.status === 503) {
+        const errorData = await response.json();
+        console.log('Feature coming soon:', errorData.detail);
+        throw new Error('FEATURE_COMING_SOON');
+    }
 
     if (!response.ok) {
         const errorText = await response.text();

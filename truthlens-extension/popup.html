@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,20 +12,20 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       margin: 0;
     }
-    
+
     h1 {
       font-size: 20px;
       margin: 0 0 10px 0;
       color: #1d9bf0;
     }
-    
+
     p {
       font-size: 14px;
       color: #536471;
       line-height: 1.5;
       margin: 0 0 15px 0;
     }
-    
+
     .instructions {
       background: #f7f9f9;
       padding: 10px;
@@ -32,7 +33,47 @@
       font-size: 13px;
       color: #0f1419;
     }
-    
+
+    .quota-section {
+      margin-top: 15px;
+      padding: 12px;
+      background: #e8f5e9;
+      border-radius: 8px;
+    }
+
+    .quota-header {
+      font-size: 12px;
+      font-weight: 600;
+      color: #2e7d32;
+      margin-bottom: 8px;
+    }
+
+    .quota-stats {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1b5e20;
+      margin-bottom: 8px;
+    }
+
+    .quota-bar {
+      height: 6px;
+      background: #c8e6c9;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+
+    .quota-progress {
+      height: 100%;
+      background: #4caf50;
+      transition: width 0.3s ease;
+    }
+
+    .quota-reset {
+      font-size: 11px;
+      color: #558b2f;
+    }
+
     .footer {
       margin-top: 20px;
       padding-top: 15px;
@@ -43,10 +84,11 @@
     }
   </style>
 </head>
+
 <body>
   <h1>🔍 TruthLens</h1>
   <p>Real-time fact-checking for X (Twitter)</p>
-  
+
   <div class="instructions">
     <strong>How to use:</strong>
     <ol style="margin: 10px 0 0 0; padding-left: 20px;">
@@ -55,9 +97,24 @@
       <li>Click it to fact-check the tweet</li>
     </ol>
   </div>
-  
+
+  <!-- Quota Display -->
+  <div id="quota-display" class="quota-section">
+    <div class="quota-header">Daily Fact-Checks</div>
+    <div class="quota-stats">
+      <span id="quota-used">--</span> / <span id="quota-limit">25</span> used
+    </div>
+    <div class="quota-bar">
+      <div id="quota-progress" class="quota-progress"></div>
+    </div>
+    <div class="quota-reset" id="quota-reset">Resets: --</div>
+  </div>
+
   <div class="footer">
     Built for QHacks 2026
   </div>
+
+  <script src="popup.js"></script>
 </body>
+
 </html>

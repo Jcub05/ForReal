@@ -1,8 +1,9 @@
 // TruthLens Configuration and Constants
 
-// API Endpoints
-const API_ENDPOINT = 'http://localhost:8000/api/fact-check';
-const TTS_ENDPOINT = 'http://localhost:8000/api/text-to-speech';
+// API Endpoints - Production
+const API_BASE_URL = 'https://for-real-fpg3t.ondigitalocean.app';
+const API_ENDPOINT = `${API_BASE_URL}/api/fact-check`;
+const TTS_ENDPOINT = `${API_BASE_URL}/api/text-to-speech`;
 
 // SVG Icons
 const MAGNIFY_ICON = `
@@ -55,17 +56,17 @@ const X_ICON = `
 
 // DOM Selectors
 const SELECTORS = {
-    TWEET_ARTICLE: 'article[data-testid="tweet"]',
-    ACTION_BAR: '[role="group"]',
-    TWEET_TEXT: '[data-testid="tweetText"]',
-    TWEET_PHOTO: '[data-testid="tweetPhoto"]',
-    TWEET_VIDEO: '[data-testid="tweetVideo"]',
-    TWEET_LINK: 'a[href*="/status/"]'
+  TWEET_ARTICLE: 'article[data-testid="tweet"]',
+  ACTION_BAR: '[role="group"]',
+  TWEET_TEXT: '[data-testid="tweetText"]',
+  TWEET_PHOTO: '[data-testid="tweetPhoto"]',
+  TWEET_VIDEO: '[data-testid="tweetVideo"]',
+  TWEET_LINK: 'a[href*="/status/"]'
 };
 
 // Configuration
 const CONFIG = {
-    OBSERVER_CHECK_INTERVAL: 3000, // ms
-    NAVIGATION_DELAY: 500, // ms
-    SELECTION_MIN_LENGTH: 5 // characters
+  OBSERVER_CHECK_INTERVAL: 3000, // ms
+  NAVIGATION_DELAY: 500, // ms
+  SELECTION_MIN_LENGTH: 5 // characters
 };
