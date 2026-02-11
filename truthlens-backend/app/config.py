@@ -54,6 +54,10 @@ class Settings:
     HOST: str = "0.0.0.0"
     PORT: int = 8000
     
+    # Rate Limiting Configuration
+    PRODUCTION_MODE: bool = os.getenv("PRODUCTION_MODE", "false").lower() == "true"
+    FREE_TIER_DAILY_LIMIT: int = int(os.getenv("FREE_TIER_DAILY_LIMIT", "25"))
+    
     # Thread Pool
     MAX_WORKERS: int = 5
     

@@ -9,23 +9,23 @@ router = APIRouter(prefix="/api", tags=["media"])
 @router.post("/check-media", response_model=MediaCheckResponse)
 async def check_media(request: MediaCheckRequest):
     """
-    Check if an image or video is AI-generated using Hive API.
+    AI media detection endpoint - Currently disabled.
+    
+    This premium feature will be available soon for detecting AI-generated images.
     
     Args:
         request: MediaCheckRequest with media_url and media_type
         
     Returns:
-        MediaCheckResponse with AI detection results
+        HTTP 503 with coming soon message
     """
-    try:
-        result = await MediaCheckService.check_media(
-            request.media_url,
-            request.media_type
-        )
-        return result
-        
-    except ValueError as e:
-        raise HTTPException(status_code=503, detail=str(e))
-    except Exception as e:
-        print(f"Error in check_media: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Media check error: {str(e)}")
+    # Block all users with "coming soon" message
+    raise HTTPException(
+        status_code=503,
+        detail={
+            "error": "Feature coming soon",
+            "message": "AI media detection is currently being enhanced and will be available soon. Stay tuned!",
+            "feature": "AI Media Detection",
+            "status": "coming_soon"
+        }
+    )

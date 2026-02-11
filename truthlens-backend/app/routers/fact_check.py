@@ -1,25 +1,35 @@
 """Fact-checking API routes."""
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import Response
 import time
 from app.models import FactCheckRequest, FactCheckResponse, TTSRequest
 from app.services import FactCheckService, SearchService, TTSService
+from app.config import settings
 
 router = APIRouter(prefix="/api", tags=["fact-check"])
 
 
 @router.post("/fact-check", response_model=FactCheckResponse)
-async def fact_check(request: FactCheckRequest):
+async def fact_check(request_data: FactCheckRequest, request: Request):
     """
-    Main fact-checking endpoint.
+    Main fact-checking endpoint with rate limiting.
     
     Process:
-    1. Extract core claim using Gemini AI
-    2. Search for sources using Brave Search with extracted claim
-    3. Synthesize fact-check result using Gemini AI
+    1. Check rate limit
+    2. Extract core claim using Gemini AI
+    3. Search for sources using Brave Search with extracted claim
+    4. Synthesize fact-check result using Gemini AI
     """
     try:
-        tweet_text = request.text.strip()
+        # Import rate limiter from main app
+        from app.main import rate_limiter
+        
+        # Check rate limit (only if production mode)
+        if settings.PRODUCTION_MODE:
+            from app.middleware import rate_limit_middleware
+            await rate_limit_middleware(request, rate_limiter)
+        
+        tweet_text = request_data.text.strip()
         
         if not tweet_text:
             return FactCheckResponse(
@@ -41,6 +51,10 @@ async def fact_check(request: FactCheckRequest):
         print(f"⏱️  Brave search took: {search_time:.2f}s")
         
         if not search_results:
+            # Increment usage even for unverifiable results
+            if settings.PRODUCTION_MODE:
+                rate_limiter.increment_usage(request)
+            
             return FactCheckResponse(
                 label="Unverifiable",
                 explanation="No reliable sources found to verify this claim.",
@@ -56,8 +70,20 @@ async def fact_check(request: FactCheckRequest):
         synthesis_time = time.time() - synthesis_start
         print(f"⏱️  Gemini synthesis took: {synthesis_time:.2f}s")
         
+        # Increment usage counter after successful fact-check
+        if settings.PRODUCTION_MODE:
+            rate_limiter.increment_usage(request)
+            
+            # Add rate limit headers to response
+            stats = rate_limiter.get_usage_stats(request)
+            # Note: FastAPI doesn't easily support adding headers to Pydantic model responses
+            # Extension can call /api/usage to get remaining quota
+        
         return result
         
+    except HTTPException:
+        # Re-raise rate limit errors
+        raise
     except Exception as e:
         print(f"Error in fact_check: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
