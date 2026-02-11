@@ -2,7 +2,7 @@
 TruthLens API - Main application entry point.
 Refactored modular architecture for scalability.
 """
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.routers import fact_check_router, media_router
@@ -74,13 +74,11 @@ async def health():
 
 
 @app.get("/api/usage")
-async def get_usage(request):
+async def get_usage(request: Request):
     """
     Get usage statistics for the current user.
     Returns remaining quota and reset time.
     """
-    from fastapi import Request
-    
     stats = rate_limiter.get_usage_stats(request)
     return {
         "status": "success",
