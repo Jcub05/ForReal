@@ -63,3 +63,85 @@ https://github.com/yourusername/ForReal/issues
 ## Privacy Policy URL
 
 [You'll need to add this after hosting it]
+
+---
+
+## Chrome Web Store Submission - Privacy Practices Tab
+
+### Single Purpose Description
+
+ForReal provides real-time fact-checking for X (Twitter) posts. Users click "Verify" on any tweet to instantly check claims against trusted news sources using AI-powered analysis.
+
+### Permission Justifications
+
+#### activeTab Permission
+
+ForReal requires the `activeTab` permission to access the content of the currently active X (Twitter) tab when users click the "Verify" button. This allows the extension to extract tweet text and metadata from the active page to send for fact-checking analysis. Without this permission, the extension cannot read the tweet content that users want to verify.
+
+#### scripting Permission
+
+The `scripting` permission is essential for ForReal to inject the user interface elements (Verify buttons and fact-check results overlay) into X (Twitter) pages. This permission allows the extension to dynamically add interactive elements to tweets and display verification results directly on the page. All injected code is included in the extension package and executes locally in the user's browser.
+
+#### contextMenus Permission
+
+ForReal uses the `contextMenus` permission to provide users with a convenient right-click "Verify with ForReal" option on tweets. This creates an alternative way to initiate fact-checking beyond the inline Verify button, improving user experience and accessibility. The context menu only appears on X (Twitter) pages.
+
+#### storage Permission
+
+The `storage` permission allows ForReal to store two pieces of data locally in the user's browser:
+1. An anonymous user ID (randomly generated UUID) for quota tracking
+2. Daily fact-check usage count to enforce the 25-check-per-day free tier limit
+
+No personal information, browsing history, or tweet content is stored. All stored data remains local to the user's device and is never transmitted to third parties.
+
+#### Host Permission Justification
+
+ForReal requires host permissions (`<all_urls>`) to inject the Verify button and display fact-check results on X (Twitter) pages, regardless of which subdomain or path users are browsing (x.com, twitter.com, mobile.x.com, etc.). The extension only activates and displays UI elements on social media sites where users view potentially misleading content. Host permissions enable the content scripts to run on these pages and provide the core fact-checking functionality.
+
+#### Remote Code Usage
+
+**Yes, ForReal uses remote code.**
+
+ForReal sends tweet content to a secure backend API hosted at https://forreal-backend.example.com for fact-checking analysis. The backend performs three functions:
+
+1. **Web Search**: Queries trusted news sources, fact-checkers, and authoritative databases for information related to the tweet's claims
+2. **AI Analysis**: Uses Google Gemini API to synthesize search results and generate a verdict (True, False, Misleading, or Unverifiable)
+3. **Rate Limiting**: Enforces the 25-checks-per-day quota using the anonymous user ID
+
+The remote backend is necessary because:
+- Fact-checking requires access to real-time news databases and search engines not available in the browser
+- AI analysis using Google Gemini API requires server-side API authentication
+- Rate limiting must be enforced server-side to prevent abuse
+
+All extension code (JavaScript, HTML, CSS) is included in the extension package. Only tweet text and the anonymous user ID are sent to the backend. No remote JavaScript is loaded or executed—the extension simply makes API calls to the backend and displays the returned results.
+
+### Language
+
+English (United States)
+
+### Category
+
+Productivity
+
+---
+
+## Manual Steps Required
+
+Before submitting, you must complete these steps in the Chrome Web Store Developer Dashboard:
+
+1. **Account Tab**: 
+   - Enter your contact email
+   - Verify the email address
+
+2. **Privacy Practices Tab**:
+   - Copy-paste the justifications above into the corresponding fields
+   - Select "Yes, I am using Remote code" and paste the remote code justification
+   - Certify data usage compliance
+
+3. **Store Listing Tab**:
+   - Select Language: English (United States)
+   - Select Category: Productivity
+   - Upload icon image (128x128)
+   - Verify screenshots are uploaded
+
+4. **Save Draft** after completing all fields

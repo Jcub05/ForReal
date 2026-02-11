@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ForReal - Privacy Policy</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #1a1a1a;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+
+        h3 {
+            color: #34495e;
+            font-size: 1.3em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 15px;
+        }
+
+        ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .last-updated {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-bottom: 30px;
+        }
+
+        .highlight {
+            background: #ecf0f1;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ecf0f1;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+
+        strong {
+            color: #2c3e50;
+        }
+
+        ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        ol li {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>ForReal Privacy Policy</h1>
+        <p class="last-updated"><strong>Last Updated:</strong> February 10, 2026</p>
+
+        <h2>Overview</h2>
+        <p>ForReal is a Chrome extension that provides real-time fact-checking for X (formerly Twitter) posts. This
+            privacy policy explains what data we collect, how we use it, and your rights.</p>
+
+        <h2>Data Collection</h2>
+
+        <h3>What We Collect</h3>
+
+        <p><strong>Anonymous User ID:</strong></p>
+        <ul>
+            <li>A random UUID generated locally in your browser</li>
+            <li>Used only for rate limiting (25 fact-checks per day)</li>
+            <li>Stored in your browser's local storage</li>
+            <li>Cannot be used to identify you personally</li>
+        </ul>
+
+        <p><strong>Tweet Content:</strong></p>
+        <ul>
+            <li>Text from tweets you choose to fact-check</li>
+            <li>Sent to our backend API for analysis</li>
+            <li>Not stored permanently on our servers</li>
+            <li>Processed temporarily to generate fact-check results</li>
+        </ul>
+
+        <h3>What We Don't Collect</h3>
+        <ul>
+            <li>Names, email addresses, or personal information</li>
+            <li>Browsing history</li>
+            <li>Twitter/X account information</li>
+            <li>IP addresses (beyond temporary rate limiting)</li>
+            <li>Location data</li>
+            <li>Any data from tweets you don't fact-check</li>
+        </ul>
+
+        <h2>How We Use Your Data</h2>
+
+        <p><strong>Fact-Checking Service:</strong></p>
+        <ul>
+            <li>Tweet text is sent to Google Gemini AI for analysis</li>
+            <li>Search queries sent to Brave Search API to find sources</li>
+            <li>Results returned to you instantly</li>
+            <li>No long-term storage of your queries</li>
+        </ul>
+
+        <p><strong>Rate Limiting:</strong></p>
+        <ul>
+            <li>Anonymous user ID tracks your daily usage (25 fact-checks/day)</li>
+            <li>Resets automatically at midnight UTC</li>
+            <li>Prevents API abuse and manages costs</li>
+        </ul>
+
+        <h2>Third-Party Services</h2>
+
+        <p>ForReal uses the following third-party APIs:</p>
+
+        <ol>
+            <li>
+                <strong>Google Gemini AI</strong>
+                <ul>
+                    <li>Purpose: Analyze claims and synthesize information</li>
+                    <li>Data shared: Tweet text only</li>
+                    <li>Privacy policy: <a href="https://policies.google.com/privacy"
+                            target="_blank">https://policies.google.com/privacy</a></li>
+                </ul>
+            </li>
+
+            <li>
+                <strong>Brave Search API</strong>
+                <ul>
+                    <li>Purpose: Find credible sources for fact-checking</li>
+                    <li>Data shared: Search queries derived from tweet content</li>
+                    <li>Privacy policy: <a href="https://brave.com/privacy/"
+                            target="_blank">https://brave.com/privacy/</a></li>
+                </ul>
+            </li>
+        </ol>
+
+        <h2>Data Storage and Retention</h2>
+        <ul>
+            <li><strong>Your browser:</strong> Anonymous user ID stored in Chrome's local storage</li>
+            <li><strong>Our servers:</strong> No permanent data storage</li>
+            <li><strong>Processing:</strong> Tweet text processed in memory and discarded after response</li>
+            <li><strong>Logs:</strong> Minimal server logs kept for 7 days for debugging purposes</li>
+        </ul>
+
+        <h2>Your Rights</h2>
+
+        <p><strong>You have the right to:</strong></p>
+        <ul>
+            <li>Stop using ForReal at any time by uninstalling the extension</li>
+            <li>Clear your anonymous user ID by clearing browser storage</li>
+            <li>Request information about our data practices (contact below)</li>
+        </ul>
+
+        <div class="highlight">
+            <strong>Note:</strong> Since we don't collect personally identifiable information, we cannot identify or
+            delete data associated with specific individuals.
+        </div>
+
+        <h2>Children's Privacy</h2>
+        <p>ForReal does not knowingly collect data from users under 13. The extension is intended for general audiences.
+        </p>
+
+        <h2>Changes to This Policy</h2>
+        <p>We may update this privacy policy from time to time. Changes will be posted on this page with an updated
+            "Last Updated" date.</p>
+
+        <h2>Security</h2>
+        <ul>
+            <li>All API communications use HTTPS encryption</li>
+            <li>No passwords or credentials stored</li>
+            <li>Anonymous user IDs cannot be traced to individuals</li>
+            <li>Backend hosted on secure Digital Ocean infrastructure</li>
+        </ul>
+
+        <h2>Permissions Explained</h2>
+
+        <p>ForReal requests the following Chrome permissions:</p>
+        <ul>
+            <li><strong>activeTab:</strong> To read tweet text when you click the fact-check button</li>
+            <li><strong>scripting:</strong> To inject the fact-check button into X.com pages</li>
+            <li><strong>contextMenus:</strong> For right-click menu options (if enabled)</li>
+            <li><strong>storage:</strong> To save your anonymous user ID locally</li>
+            <li><strong>host_permissions (*://*/*):</strong> To work on all X.com/Twitter.com URLs</li>
+        </ul>
+
+        <h2>Contact</h2>
+        <p>For questions about this privacy policy or ForReal's data practices:</p>
+        <ul>
+            <li>GitHub Issues: <a href="#" target="_blank">[Your GitHub Repo URL/issues]</a></li>
+            <li>Email: [Your contact email]</li>
+        </ul>
+
+        <h2>Open Source</h2>
+        <p>ForReal is open source. You can review our code at: <a href="#" target="_blank">[Your GitHub Repo URL]</a>
+        </p>
+
+        <div class="footer">
+            <p><strong>Your privacy matters.</strong> ForReal is designed with privacy as a priority—collecting only
+                what's necessary to provide fact-checking services.</p>
+        </div>
+    </div>
+</body>
+
+</html>
