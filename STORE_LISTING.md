@@ -62,7 +62,7 @@ https://github.com/yourusername/ForReal/issues
 
 ## Privacy Policy URL
 
-[You'll need to add this after hosting it]
+https://jcub05.github.io/ForReal/privacy-policy.html
 
 ---
 
