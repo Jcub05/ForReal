@@ -37,7 +37,7 @@ function showFloatingButton(rect, text) {
     const btn = createElement('div', 'truthlens-fab');
     btn.id = 'truthlens-fab';
     btn.innerHTML = MAGNIFY_ICON;
-    btn.title = 'Verify with TruthLens';
+    btn.title = 'Verify with ForReal';
     btn.dataset.text = text;
 
     // Calculate position

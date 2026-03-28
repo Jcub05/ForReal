@@ -1,4 +1,4 @@
-# TruthLens Setup & Run Guide
+# ForReal Setup & Run Guide
 
 ## 🚀 Quick Start
 

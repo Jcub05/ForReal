@@ -1,4 +1,4 @@
-# TruthLens Backend - Architecture Documentation
+# ForReal Backend - Architecture Documentation
 
 ## 📁 Project Structure
 
