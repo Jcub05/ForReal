@@ -1,7 +1,8 @@
-# ForReal Backend - Architecture Documentation
+# TruthLens (ForReal) - Full-Stack Architecture Documentation
 
 ## 📁 Project Structure
 
+### Backend (truthlens-backend)
 ```
 truthlens-backend/
 ├── app/
@@ -17,8 +18,9 @@ truthlens-backend/
 │   ├── services/                # Business logic layer
 │   │   ├── __init__.py
 │   │   ├── fact_check_service.py   # Fact-checking with Gemini
-│   │   ├── media_check_service.py  # AI media detection with Hive
-│   │   └── search_service.py       # Brave Search integration
+│   │   ├── media_check_service.py  # AI media detection with AI or Not
+│   │   ├── search_service.py       # Brave Search integration
+│   │   └── tts_service.py          # ElevenLabs Text-to-Speech integration
 │   │
 │   ├── routers/                 # API endpoints
 │   │   ├── __init__.py
@@ -34,6 +36,20 @@ truthlens-backend/
 ├── requirements.txt
 ├── .env
 └── README.md
+```
+
+### Frontend (truthlens-extension)
+```
+truthlens-extension/
+├── src/
+│   ├── components/       # UI Logic (e.g., fact-check-button.js)
+│   ├── services/         # Core features (injection, TTS, fact-checker)
+│   ├── utils/            # API clients, DOM manipulators
+│   ├── config/           # Constants
+│   └── content.js        # Entry point for injection
+├── background.js         # Service worker (Manifest V3)
+├── manifest.json         # Extension config
+└── styles.css            # Extension styling
 ```
 
 ## 🏗️ Architecture Overview
@@ -52,8 +68,8 @@ truthlens-backend/
 └────────────────┬────────────────────┘
                  │
 ┌────────────────▼────────────────────┐
-│      External APIs Layer            │  ← Gemini, Brave, Hive
-│   (Gemini, Brave Search, Hive)     │
+│      External APIs Layer            │  ← Gemini, Brave, AI or Not, ElevenLabs
+│   (Gemini, Brave, AI or Not, TTS)   │
 └─────────────────────────────────────┘
 ```
 
@@ -66,6 +82,11 @@ truthlens-backend/
 | **Models** | Data validation & serialization | `models/*.py` |
 | **Config** | Environment & settings | `config.py` |
 | **Platforms** | Platform-specific logic | `platforms/*.py` |
+
+### **3. Frontend (Chrome Extension) Architecture**
+- **Pattern Used:** Observer Pattern & Modular Components
+- **Manifest V3 Setup:** Uses a lightweight `background.js` as the Service Worker to manage global extension events independently from frontend DOM changes.
+- **Dynamic DOM Injection:** Uses `MutationObserver` (in `src/services/injection-service.js`) to actively monitor changes in X/Twitter's Single Page Application and dynamically inject React-like UI components (such as `src/components/fact-check-button.js`) into the tweet's action bar.
 
 ## 🚀 Running the Application
 
