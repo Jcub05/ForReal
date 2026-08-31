@@ -4,15 +4,11 @@
  * Initialize the ForReal extension
  */
 function init() {
-    console.log('ForReal: Initializing...');
-
-    // Check if we are on X/Twitter
     if (!isTwitter()) {
-        console.log('ForReal: Not on Twitter/X, extension not active');
         return;
     }
 
-    // Watch for new tweets being loaded (X is an SPA)
+    // X is a SPA, so watch for new tweets being loaded in
     const observer = new MutationObserver((mutations) => {
         mutations.forEach(() => {
             injectFactCheckIcons();
@@ -24,37 +20,28 @@ function init() {
         subtree: true
     });
 
-    // Initial injection
     injectFactCheckIcons();
-
-    // Re-inject when URL changes (for SPA navigation)
     setupNavigationObserver();
 
-    // Also listen for browser back/forward
     window.addEventListener('popstate', () => {
-        console.log('ForReal: Navigation detected (popstate), re-injecting icons');
         setTimeout(() => injectFactCheckIcons(), CONFIG.NAVIGATION_DELAY);
         setTimeout(() => injectFactCheckIcons(), CONFIG.NAVIGATION_DELAY * 2);
     });
 
-    // Periodic check to re-inject icons if they disappear (fallback safety net)
+    // Fallback safety net in case icons get wiped by a Twitter re-render
     setInterval(() => {
         injectFactCheckIcons();
     }, CONFIG.OBSERVER_CHECK_INTERVAL);
 
-    // Listen for messages from background script (Context Menu)
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         if (request.action === "verify_selection") {
-            console.log("ForReal: Verifying selection:", request.text);
             handleSelectionVerification(request.text);
         }
     });
 
-    // Listen for text selection (Floating Action Button)
     document.addEventListener('mouseup', handleTextSelection);
     document.addEventListener('keyup', handleTextSelection);
 
-    // Close FAB on click outside
     document.addEventListener('mousedown', (e) => {
         if (!e.target.classList.contains('forreal-fab') && !e.target.closest('.forreal-fab')) {
             removeFloatingButton();
@@ -70,7 +57,6 @@ function setupNavigationObserver() {
     new MutationObserver(() => {
         const url = location.href;
         if (url !== lastUrl) {
-            console.log('ForReal: URL changed, re-injecting icons');
             lastUrl = url;
             // Delay to allow Twitter to render new content
             setTimeout(() => injectFactCheckIcons(), CONFIG.NAVIGATION_DELAY);
@@ -83,43 +69,31 @@ function setupNavigationObserver() {
  * Find all tweets and inject the magnifying glass icon
  */
 function injectFactCheckIcons() {
-    // Find all tweet articles
     const tweets = findAllTweets();
 
     tweets.forEach((tweet) => {
-        // Find the action bar (reply, retweet, like buttons)
         const actionBar = tweet.querySelector(SELECTORS.ACTION_BAR);
         if (!actionBar) {
             return;
         }
 
-        // Check if we already injected our icon
         const existingButton = actionBar.querySelector('.forreal-button');
 
-        // Verify the button is actually in the DOM and attached
+        // Twitter's SPA re-renders can drop our button from the DOM while
+        // leaving the processed marker on the tweet - detect and reset that case.
         if (existingButton && existingButton.isConnected) {
             return;
         }
-
-        // If button exists but is disconnected, remove the marker
         if (tweet.hasAttribute('data-forreal-processed') && !existingButton) {
             tweet.removeAttribute('data-forreal-processed');
         }
-
-        // Skip if already processed and button exists
         if (tweet.hasAttribute('data-forreal-processed') && existingButton) {
             return;
         }
 
-        // Get tweet ID for reference (optional)
         const tweetId = getTweetId(tweet);
-
-        // Create and inject the magnifying glass button
         const factCheckButton = createFactCheckButton(tweet, tweetId);
-
-        // Mark the tweet as processed to avoid re-injection
         tweet.setAttribute('data-forreal-processed', 'true');
-
         actionBar.appendChild(factCheckButton);
     });
 }

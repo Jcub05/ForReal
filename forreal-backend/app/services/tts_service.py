@@ -24,28 +24,17 @@ class TTSService:
         Returns:
             Formatted text ready for text-to-speech conversion
         """
-        # Start with the claim
         speech_text = f"The tweet claims that {claim}. "
-        
-        # Add the fact check result
         speech_text += f"After fact check, it has been determined that this post is {result.label.lower()}. "
-        
-        # Add the explanation
         speech_text += f"{result.explanation} "
-        
-        # Add source information
+
         if result.sources and len(result.sources) > 0:
             speech_text += "This information is based on the following sources: "
-            
+
             for i, source in enumerate(result.sources):
-                # Add source number and title
                 speech_text += f"Source {i + 1}: {source.title}. "
-                
-                # Add age information if available
                 if source.published_date:
-                    # Parse the published_date to get relative age
-                    age_str = source.published_date
-                    speech_text += f"Published {age_str}. "
+                    speech_text += f"Published {source.published_date}. "
         else:
             speech_text += "No sources were found to verify this claim."
         
@@ -72,29 +61,22 @@ class TTSService:
         if not settings.ELEVENLABS_API_KEY:
             raise Exception("ElevenLabs API key not configured")
         
-        # Use provided voice ID or default
         voice = voice_id or settings.ELEVENLABS_VOICE_ID
-        
-        # Build the API URL
         url = f"{settings.ELEVENLABS_API_URL}/{voice}"
-        
-        # Request headers
+
         headers = {
             "xi-api-key": settings.ELEVENLABS_API_KEY,
             "Content-Type": "application/json"
         }
-        
-        # Request body
         payload = {
             "text": text,
-            "model_id": "eleven_multilingual_v2",  # Better quality model
+            "model_id": "eleven_multilingual_v2",
             "voice_settings": {
-                "stability": 0.5,  # Balanced stability
-                "similarity_boost": 0.75  # Good clarity
+                "stability": 0.5,
+                "similarity_boost": 0.75
             }
         }
-        
-        # Make the API call
+
         async with httpx.AsyncClient(timeout=30.0) as client:
             response = await client.post(
                 url,
@@ -124,8 +106,5 @@ class TTSService:
         Returns:
             Audio data as bytes (MP3 format)
         """
-        # Format the text for speech
         speech_text = TTSService.format_fact_check_for_speech(claim, result)
-        
-        # Generate the audio
         return await TTSService.generate_speech(speech_text)

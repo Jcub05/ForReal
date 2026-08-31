@@ -9,23 +9,17 @@ from app.routers import fact_check_router, media_router
 from app.middleware import RateLimiter
 
 print("-" * 50)
-print("🚀 Initializing ForReal API")
+print("Initializing ForReal API")
 print("-" * 50)
 
-# Initialize FastAPI app
 app = FastAPI(
     title="ForReal API",
     version="1.0.0",
     description="AI-powered fact-checking and media verification API"
 )
-print("✓ FastAPI app initialized")
 
-# Initialize rate limiter
 rate_limiter = RateLimiter(daily_limit=settings.FREE_TIER_DAILY_LIMIT)
-print(f"✓ Rate limiter initialized (limit: {settings.FREE_TIER_DAILY_LIMIT} requests/day)")
-print(f"✓ Production mode: {settings.PRODUCTION_MODE}")
 
-# Configure CORS for Chrome Extension
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # In production, restrict to your extension ID
@@ -33,20 +27,14 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-print("✓ CORS middleware configured")
 
-# Include routers
 app.include_router(fact_check_router)
 app.include_router(media_router)
-print("✓ API routers registered")
 
+print(f"ForReal API ready | model: {settings.GEMINI_MODEL} | search: Brave | "
+      f"media detection: {'enabled' if settings.AIORNOT_API_KEY else 'disabled'} | "
+      f"rate limiting: {'enabled' if settings.PRODUCTION_MODE else 'disabled (dev mode)'}")
 print("-" * 50)
-print(f"✅ ForReal API Ready")
-print(f"📍 Model: {settings.GEMINI_MODEL}")
-print(f"🔍 Search: Brave Search API")
-print(f"🤖 Media Detection: {'Enabled (AI or Not)' if settings.AIORNOT_API_KEY else 'Disabled'}")
-print(f"🚦 Rate Limiting: {'Enabled' if settings.PRODUCTION_MODE else 'Disabled (Dev Mode)'}")
-print("=" * 50)
 
 
 @app.get("/")
@@ -57,7 +45,7 @@ async def root():
         "version": "1.0.0",
         "features": {
             "fact_check": True,
-            "media_check": bool(settings.AIORNOT_API_KEY)
+            "media_check": False
         }
     }
 
@@ -69,7 +57,7 @@ async def health():
         "status": "healthy",
         "model": settings.GEMINI_MODEL,
         "search": "brave",
-        "media_detection": bool(settings.AIORNOT_API_KEY)
+        "media_detection": False
     }
 
 
@@ -89,8 +77,8 @@ async def get_usage(request: Request):
         "reset_time": stats["reset_time"],
         "features": {
             "fact_checking": True,
-            "media_detection": False,  # Coming soon
-            "text_to_speech": False   # Coming soon
+            "media_detection": False,  # backend endpoint returns 503, see routers/media.py
+            "text_to_speech": True
         }
     }
 

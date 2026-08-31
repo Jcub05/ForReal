@@ -6,10 +6,6 @@
  * @returns {Promise<Object>} - Fact-check result
  */
 async function factCheckTweet(text) {
-    console.log('ForReal: Fetching from:', API_ENDPOINT);
-    console.log('ForReal: Request body:', { text });
-
-    // Get user ID for rate limiting
     const userId = await getUserId();
 
     const response = await fetch(API_ENDPOINT, {
@@ -21,9 +17,6 @@ async function factCheckTweet(text) {
         body: JSON.stringify({ text })
     });
 
-    console.log('ForReal: Response status:', response.status);
-
-    // Handle rate limit exceeded
     if (response.status === 429) {
         const errorData = await response.json();
         console.warn('ForReal: Rate limit exceeded:', errorData);
@@ -34,9 +27,7 @@ async function factCheckTweet(text) {
         throw new Error(`API error: ${response.status}`);
     }
 
-    const data = await response.json();
-    console.log('ForReal: Response data:', data);
-    return data;
+    return await response.json();
 }
 
 /**
@@ -46,11 +37,7 @@ async function factCheckTweet(text) {
  * @returns {Promise<Object>} - Media check result
  */
 async function checkMedia(mediaUrl, mediaType = 'image') {
-    console.log('📤 Sending to backend:', { media_url: mediaUrl, media_type: mediaType });
-
     const apiUrl = API_ENDPOINT.replace('/fact-check', '/check-media');
-    console.log('API endpoint:', apiUrl);
-
     const userId = await getUserId();
 
     const response = await fetch(apiUrl, {
@@ -62,24 +49,17 @@ async function checkMedia(mediaUrl, mediaType = 'image') {
         body: JSON.stringify({ media_url: mediaUrl, media_type: mediaType })
     });
 
-    console.log('📥 Response status:', response.status);
-
-    // Handle coming soon (503)
     if (response.status === 503) {
-        const errorData = await response.json();
-        console.log('Feature coming soon:', errorData.detail);
         throw new Error('FEATURE_COMING_SOON');
     }
 
     if (!response.ok) {
         const errorText = await response.text();
-        console.error('❌ API error:', errorText);
+        console.error('ForReal: Media check API error:', errorText);
         throw new Error(`API returned ${response.status}: ${errorText}`);
     }
 
-    const data = await response.json();
-    console.log('✓ Response data:', data);
-    return data;
+    return await response.json();
 }
 
 /**
@@ -89,8 +69,6 @@ async function checkMedia(mediaUrl, mediaType = 'image') {
  * @returns {Promise<Blob>} - Audio blob
  */
 async function generateTTS(claim, result) {
-    console.log('🔊 TTS: Requesting audio for fact check');
-
     const response = await fetch(TTS_ENDPOINT, {
         method: 'POST',
         headers: {

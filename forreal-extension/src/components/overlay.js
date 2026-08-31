@@ -6,41 +6,26 @@
  * @param {Object} result - Fact-check result
  */
 function showFactCheckResult(tweet, result) {
-    console.log('ForReal: showFactCheckResult called', result);
-
-    // Remove any existing overlay from the entire page
     const existingOverlay = document.querySelector('.forreal-overlay');
     if (existingOverlay) {
-        console.log('ForReal: Removing existing overlay');
         existingOverlay.remove();
     }
 
-    // Create overlay
     const overlay = createElement('div', 'forreal-overlay');
-
-    // Determine label styling
     const labelClass = result.label.toLowerCase().replace(/\s+/g, '-');
-
-    // Build sources HTML
     const sourcesHTML = buildSourcesHTML(result.sources);
-
-    // Show bias warning only for misleading claims with detected bias
     const biasHTML = buildBiasHTML(result);
 
-    // Check for images and create media check section
     const images = getTweetImages(tweet);
     const hasVideoElement = hasVideo(tweet);
     let mediaCheckHTML = '';
 
     if (images.length > 0 && !hasVideoElement) {
-        console.log('ForReal: Adding media check button for', images.length, 'image(s)');
         mediaCheckHTML = createMediaCheckHTML(tweet, images.length);
     }
 
-    // Get tweet text for TTS
     const tweetText = extractTweetText(tweet);
 
-    // Build overlay HTML
     overlay.innerHTML = `
     <div class="forreal-header">
       <span class="forreal-label forreal-label-${labelClass}">${result.label}</span>
@@ -57,40 +42,30 @@ function showFactCheckResult(tweet, result) {
     </div>
   `;
 
-    // Stop all event propagation on the overlay
     setupOverlayEventHandlers(overlay);
 
-    // Add close button functionality
     const closeButton = overlay.querySelector('.forreal-close');
     closeButton.addEventListener('click', (e) => {
         stopEvent(e);
         overlay.remove();
     });
 
-    // Add TTS button
     if (tweetText) {
         const speakerContainer = overlay.querySelector('#forreal-speaker-container');
         const speakerButton = createTTSButton(tweetText, result);
         speakerContainer.appendChild(speakerButton);
     }
 
-    // Attach media check handlers
     if (mediaCheckHTML) {
         attachMediaCheckHandlers(overlay, tweet);
     }
 
-    // Find tweet text container and append below it
     const tweetTextContainer = tweet.querySelector(SELECTORS.TWEET_TEXT);
     if (tweetTextContainer && tweetTextContainer.parentElement) {
-        console.log('ForReal: Found tweet text container, appending to parent');
         tweetTextContainer.parentElement.appendChild(overlay);
     } else {
-        // Fallback: append to tweet article
-        console.log('ForReal: Using fallback - appending to tweet article');
         tweet.appendChild(overlay);
     }
-
-    console.log('ForReal: Overlay appended', overlay);
 }
 
 /**
@@ -99,13 +74,11 @@ function showFactCheckResult(tweet, result) {
  * @param {string} claimText - The claim text (optional)
  */
 function showGenericOverlay(result, claimText = null) {
-    // Remove existing overlay
     removeElementById('forreal-generic-overlay');
 
     const overlay = createElement('div', 'forreal-overlay forreal-fixed-overlay');
     overlay.id = 'forreal-generic-overlay';
 
-    // Determine styling
     let labelClass = 'neutral';
     let labelText = result.label || '...';
 
@@ -117,7 +90,6 @@ function showGenericOverlay(result, claimText = null) {
         labelClass = result.label.toLowerCase().replace(/\s+/g, '-');
     }
 
-    // Build sources and bias HTML
     const sourcesHTML = buildSourcesHTML(result.sources);
     const biasHTML = result.isLoading ? '' : buildBiasHTML(result);
 
@@ -138,12 +110,10 @@ function showGenericOverlay(result, claimText = null) {
     </div>
   `;
 
-    // Close handler
     overlay.querySelector('.forreal-close').addEventListener('click', () => {
         overlay.remove();
     });
 
-    // Add TTS button if applicable
     if (claimText && !result.isLoading && !result.error) {
         const speakerContainer = overlay.querySelector('#forreal-speaker-container');
         if (speakerContainer) {
@@ -191,9 +161,9 @@ function buildBiasHTML(result) {
  */
 function setupOverlayEventHandlers(overlay) {
     overlay.addEventListener('click', (e) => {
-        // Allow links to work
+        // Let source links navigate instead of being swallowed by the overlay
         if (e.target.classList.contains('forreal-source-link') || e.target.tagName === 'A') {
-            return; // Let the link click through
+            return;
         }
         stopEvent(e);
     });

@@ -6,19 +6,17 @@ import os
 from dotenv import load_dotenv
 from typing import Optional
 
-# Load environment variables
 load_dotenv()
-
 
 
 class Settings:
     """Application settings loaded from environment variables."""
-    
+
     # API Keys
     GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
     BRAVE_API_KEY: str = os.getenv("BRAVE_API_KEY", "")
-    AIORNOT_API_KEY: Optional[str] = os.getenv("AIORNOT_API_KEY")  # Replaced Hive with AI or Not
-    ELEVENLABS_API_KEY: Optional[str] = os.getenv("ELEVENLABS_API_KEY")  # ElevenLabs TTS
+    AIORNOT_API_KEY: Optional[str] = os.getenv("AIORNOT_API_KEY")
+    ELEVENLABS_API_KEY: Optional[str] = os.getenv("ELEVENLABS_API_KEY")
     
     # API Configuration
     GEMINI_MODEL: str = "gemini-2.0-flash-lite"
@@ -78,21 +76,18 @@ class Settings:
             raise ValueError(f"Configuration errors: {', '.join(errors)}")
         
         if not self.AIORNOT_API_KEY:
-            print("⚠️  AIORNOT_API_KEY not set - AI media detection will be unavailable")
-        
+            print("Warning: AIORNOT_API_KEY not set - AI media detection will be unavailable")
+
         if not self.ELEVENLABS_API_KEY:
-            print("⚠️  ELEVENLABS_API_KEY not set - Text-to-speech will be unavailable")
-        
+            print("Warning: ELEVENLABS_API_KEY not set - Text-to-speech will be unavailable")
+
         return True
 
 
-# Global settings instance
 settings = Settings()
 
-# Validate on import
 try:
     settings.validate()
-    print("✓ Configuration loaded and validated")
 except ValueError as e:
-    print(f"❌ Configuration error: {e}")
+    print(f"Configuration error: {e}")
     raise
