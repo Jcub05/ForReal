@@ -1,7 +1,8 @@
 // ForReal Configuration and Constants
 
-// API Endpoints - Production
-const API_BASE_URL = 'https://for-real-fpg3t.ondigitalocean.app';
+// API Endpoints - Local (production deployment is offline)
+// const API_BASE_URL = 'https://for-real-fpg3t.ondigitalocean.app';
+const API_BASE_URL = 'http://localhost:8000';
 const API_ENDPOINT = `${API_BASE_URL}/api/fact-check`;
 const TTS_ENDPOINT = `${API_BASE_URL}/api/text-to-speech`;
 

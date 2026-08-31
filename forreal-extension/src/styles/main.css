@@ -140,8 +140,10 @@
 
 /* Overlay styling */
 .forreal-overlay {
+  box-sizing: border-box;
   position: relative;
   width: 100%;
+  max-width: 100%;
   background: white;
   border: 1px solid rgb(239, 243, 244);
   border-radius: 16px;
@@ -154,6 +156,14 @@
   pointer-events: auto !important;
   cursor: default;
   transform-origin: top center;
+  overflow-wrap: break-word;
+  font-family: "TwitterChirp", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.forreal-overlay *,
+.forreal-overlay *::before,
+.forreal-overlay *::after {
+  box-sizing: border-box;
 }
 
 @keyframes forreal-dropdown {

@@ -65,5 +65,10 @@ function calculateFloatingPosition(rect, elementWidth, elementHeight, gap = 10) 
         top = rect.bottom + scrollTop + gap; // Show below if no space above
     }
 
+    // Clamp horizontally so it never overflows past either edge of the viewport
+    const minLeft = scrollLeft + gap;
+    const maxLeft = scrollLeft + document.documentElement.clientWidth - elementWidth - gap;
+    left = Math.min(Math.max(left, minLeft), maxLeft);
+
     return { top, left };
 }

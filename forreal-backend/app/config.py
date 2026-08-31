@@ -21,7 +21,7 @@ class Settings:
     ELEVENLABS_API_KEY: Optional[str] = os.getenv("ELEVENLABS_API_KEY")  # ElevenLabs TTS
     
     # API Configuration
-    GEMINI_MODEL: str = "gemini-2.0-flash-lite"
+    GEMINI_MODEL: str = "gemini-3.5-flash-lite"
     BRAVE_SEARCH_URL: str = "https://api.search.brave.com/res/v1/web/search"
     AIORNOT_API_URL: str = "https://api.aiornot.com/v1/reports/image"  # AI or Not endpoint
     ELEVENLABS_API_URL: str = "https://api.elevenlabs.io/v1/text-to-speech"  # ElevenLabs TTS
