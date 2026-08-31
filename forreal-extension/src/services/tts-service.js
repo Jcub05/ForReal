@@ -46,7 +46,7 @@ function createTTSButton(claim, result) {
             };
 
             currentAudio.onerror = () => {
-                console.error('🔊 TTS: Audio playback error');
+                console.error('ForReal: TTS audio playback error');
                 speakerButton.classList.remove('forreal-speaker-playing');
                 speakerButton.classList.remove('forreal-speaker-loading');
                 URL.revokeObjectURL(audioUrl);
@@ -54,10 +54,9 @@ function createTTSButton(claim, result) {
             };
 
             await currentAudio.play();
-            console.log('🔊 TTS: Playing audio');
 
         } catch (error) {
-            console.error('🔊 TTS error:', error);
+            console.error('ForReal: TTS error:', error);
             speakerButton.classList.remove('forreal-speaker-loading');
             alert('Unable to generate audio. Please check if ElevenLabs API is configured.');
         }

@@ -1,20 +1,8 @@
-// Media Checker Component - AI-generated image detection
-
-/**
- * Create media check button and result display
- * @param {HTMLElement} tweet - Tweet element
- * @param {number} imageCount - Number of images in tweet
- * @returns {string} - HTML string for media check section
- */
+// Media Checker Component - AI-generated image detection.
+// The backend /api/check-media endpoint is disabled (always returns 503,
+// see routers/media.py), so the button is hidden until that's live.
 function createMediaCheckHTML(tweet, imageCount) {
-    if (imageCount === 0) return '';
-
-    return `
-    <button class="forreal-media-check-btn" data-image-count="${imageCount}">
-      🖼️ Check if image is AI
-    </button>
-    <div class="forreal-media-result"></div>
-  `;
+    return '';
 }
 
 /**
@@ -54,8 +42,6 @@ function attachMediaCheckHandlers(overlay, tweet) {
  * @param {HTMLElement} tweet - Tweet element
  */
 function expandToImageSelection(button, imageCount, overlay, tweet) {
-    console.log('ForReal: Expanding to show', imageCount, 'image selection buttons');
-
     let numberedButtonsHTML = '<div class="forreal-media-check-container">';
     numberedButtonsHTML += '<div style="font-size: 13px; color: rgb(83, 100, 113); margin-bottom: 6px;">Select image to check:</div>';
     for (let i = 0; i < imageCount; i++) {
@@ -87,48 +73,37 @@ async function performMediaCheck(tweet, selectedIndex, resultDiv) {
     resultDiv.innerHTML = '<div class="forreal-loading-small">Checking...</div>';
 
     try {
-        console.log('🔍 ForReal: Starting media check...');
-        console.log('Selected image index:', selectedIndex);
-
-        // Get all images in the tweet
         const allImages = getTweetImages(tweet);
 
         if (allImages.length === 0) {
-            console.error('❌ No images found in tweet');
+            console.error('ForReal: No images found in tweet');
             resultDiv.innerHTML = '<div class="forreal-error">Could not find images</div>';
             return;
         }
 
-        // Get the specific image selected by user
         const mediaElement = allImages[selectedIndex];
         if (!mediaElement) {
-            console.error('❌ Invalid image index:', selectedIndex);
+            console.error('ForReal: Invalid image index:', selectedIndex);
             resultDiv.innerHTML = '<div class="forreal-error">Image not found</div>';
             return;
         }
 
         const mediaUrl = mediaElement.src;
-        console.log('✓ Found image:', mediaUrl);
-
         if (!mediaUrl) {
-            console.error('❌ Could not extract media URL from tweet');
+            console.error('ForReal: Could not extract media URL from tweet');
             resultDiv.innerHTML = '<div class="forreal-error">Could not extract image URL</div>';
             return;
         }
 
-        // Call backend API
         const data = await checkMedia(mediaUrl, 'image');
 
-        // Display result with verdict
         const icon = data.ai_generated ? '🤖' : '👤';
         const verdict = data.ai_generated ? 'AI-generated' : 'Human-created';
         const confidencePercent = Math.round(data.confidence * 100);
         resultDiv.innerHTML = `<div class="forreal-media-result-text">${icon} ${verdict} (${confidencePercent}% confidence)</div>`;
-        console.log('✓ Media check complete');
 
     } catch (error) {
-        console.error('❌ Media check error:', error);
-        console.error('Error details:', error.message);
+        console.error('ForReal: Media check error:', error);
         resultDiv.innerHTML = `<div class="forreal-error">Check failed: ${error.message}</div>`;
     }
 }

@@ -7,10 +7,8 @@ from concurrent.futures import ThreadPoolExecutor
 from app.config import settings
 from app.models import FactCheckResponse, Source
 
-# Configure Gemini
 genai.configure(api_key=settings.GEMINI_API_KEY)
 model = genai.GenerativeModel(settings.GEMINI_MODEL)
-print(f"✓ Gemini model configured: {settings.GEMINI_MODEL}")
 
 # Thread pool for async operations
 executor = ThreadPoolExecutor(max_workers=settings.MAX_WORKERS)
@@ -61,13 +59,12 @@ Return ONLY the extracted claim text, nothing else.
                 lambda: model.generate_content(prompt)
             )
             extract_time = time.time() - extract_start
-            print(f"⏱️  Gemini claim extraction took: {extract_time:.2f}s")
-            
+            print(f"Gemini claim extraction took {extract_time:.2f}s")
+
             extracted = response.text.strip()
             # Remove quotes if Gemini added them
             extracted = extracted.strip('"').strip("'").strip()
-            
-            print(f"📝 Extracted claim: {extracted}")
+
             return extracted if extracted else text
             
         except Exception as e:
@@ -143,7 +140,7 @@ CONFIDENCE: [0.0 - 1.0]
                 lambda: model.generate_content(prompt)
             )
             gemini_time = time.time() - gemini_start
-            print(f"⏱️  Gemini API call took: {gemini_time:.2f}s")
+            print(f"Gemini synthesis took {gemini_time:.2f}s")
             
             # Parse the response
             response_text = response.text.strip()

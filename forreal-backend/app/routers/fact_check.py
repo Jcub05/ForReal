@@ -39,16 +39,12 @@ async def fact_check(request_data: FactCheckRequest, request: Request):
                 confidence=0.0
             )
         
-        # Step 1: Extract the core claim using Gemini
-        print(f"📝 Original text: {tweet_text[:100]}...")
         extracted_claim = await FactCheckService.extract_claim(tweet_text)
-        
-        # Step 2: Search for relevant sources using extracted claim
-        print(f"🔍 Searching for: {extracted_claim[:100]}...")
+
         search_start = time.time()
         search_results = await SearchService.search_claim(extracted_claim)
         search_time = time.time() - search_start
-        print(f"⏱️  Brave search took: {search_time:.2f}s")
+        print(f"Brave search took {search_time:.2f}s")
         
         if not search_results:
             # Increment usage even for unverifiable results
@@ -62,23 +58,18 @@ async def fact_check(request_data: FactCheckRequest, request: Request):
                 confidence=0.0
             )
         
-        # Step 3: Synthesize the fact-check using AI with original text
         synthesis_start = time.time()
         result = await FactCheckService.synthesize_fact_check(
             extracted_claim, tweet_text, search_results
         )
         synthesis_time = time.time() - synthesis_start
-        print(f"⏱️  Gemini synthesis took: {synthesis_time:.2f}s")
-        
-        # Increment usage counter after successful fact-check
+        print(f"Gemini synthesis took {synthesis_time:.2f}s")
+
         if settings.PRODUCTION_MODE:
             rate_limiter.increment_usage(request)
-            
-            # Add rate limit headers to response
-            stats = rate_limiter.get_usage_stats(request)
-            # Note: FastAPI doesn't easily support adding headers to Pydantic model responses
-            # Extension can call /api/usage to get remaining quota
-        
+            # FastAPI doesn't easily support adding headers to Pydantic model responses,
+            # so the extension calls /api/usage separately to get remaining quota.
+
         return result
         
     except HTTPException:
@@ -98,17 +89,11 @@ async def text_to_speech(request: TTSRequest):
     a speech-friendly narrative, and returns MP3 audio data.
     """
     try:
-        print(f"🔊 TTS request for claim: {request.claim[:50]}...")
-        
-        # Generate the audio
         audio_data = await TTSService.generate_fact_check_speech(
             request.claim,
             request.result
         )
-        
-        print(f"✓ Generated {len(audio_data)} bytes of audio")
-        
-        # Return the audio as MP3
+
         return Response(
             content=audio_data,
             media_type="audio/mpeg",

@@ -67,13 +67,8 @@ class TwitterPlatform(BasePlatform):
         Returns:
             Preprocessed text
         """
-        # Remove @mentions
         text = re.sub(r'@\w+', '', text)
-        
-        # Remove URLs
         text = re.sub(r'https?://\S+', '', text)
-        
-        # Clean up extra whitespace
         text = ' '.join(text.split())
         
         return text.strip()
