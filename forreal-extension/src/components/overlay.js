@@ -6,17 +6,17 @@
  * @param {Object} result - Fact-check result
  */
 function showFactCheckResult(tweet, result) {
-    console.log('TruthLens: showFactCheckResult called', result);
+    console.log('ForReal: showFactCheckResult called', result);
 
     // Remove any existing overlay from the entire page
-    const existingOverlay = document.querySelector('.truthlens-overlay');
+    const existingOverlay = document.querySelector('.forreal-overlay');
     if (existingOverlay) {
-        console.log('TruthLens: Removing existing overlay');
+        console.log('ForReal: Removing existing overlay');
         existingOverlay.remove();
     }
 
     // Create overlay
-    const overlay = createElement('div', 'truthlens-overlay');
+    const overlay = createElement('div', 'forreal-overlay');
 
     // Determine label styling
     const labelClass = result.label.toLowerCase().replace(/\s+/g, '-');
@@ -33,7 +33,7 @@ function showFactCheckResult(tweet, result) {
     let mediaCheckHTML = '';
 
     if (images.length > 0 && !hasVideoElement) {
-        console.log('TruthLens: Adding media check button for', images.length, 'image(s)');
+        console.log('ForReal: Adding media check button for', images.length, 'image(s)');
         mediaCheckHTML = createMediaCheckHTML(tweet, images.length);
     }
 
@@ -42,16 +42,16 @@ function showFactCheckResult(tweet, result) {
 
     // Build overlay HTML
     overlay.innerHTML = `
-    <div class="truthlens-header">
-      <span class="truthlens-label truthlens-label-${labelClass}">${result.label}</span>
-      <div class="truthlens-header-buttons">
-        <span id="truthlens-speaker-container"></span>
-        <button class="truthlens-close">×</button>
+    <div class="forreal-header">
+      <span class="forreal-label forreal-label-${labelClass}">${result.label}</span>
+      <div class="forreal-header-buttons">
+        <span id="forreal-speaker-container"></span>
+        <button class="forreal-close">×</button>
       </div>
     </div>
-    <div class="truthlens-body">
+    <div class="forreal-body">
       ${biasHTML}
-      <p class="truthlens-explanation">${result.explanation}</p>
+      <p class="forreal-explanation">${result.explanation}</p>
       ${sourcesHTML}
       ${mediaCheckHTML}
     </div>
@@ -61,7 +61,7 @@ function showFactCheckResult(tweet, result) {
     setupOverlayEventHandlers(overlay);
 
     // Add close button functionality
-    const closeButton = overlay.querySelector('.truthlens-close');
+    const closeButton = overlay.querySelector('.forreal-close');
     closeButton.addEventListener('click', (e) => {
         stopEvent(e);
         overlay.remove();
@@ -69,7 +69,7 @@ function showFactCheckResult(tweet, result) {
 
     // Add TTS button
     if (tweetText) {
-        const speakerContainer = overlay.querySelector('#truthlens-speaker-container');
+        const speakerContainer = overlay.querySelector('#forreal-speaker-container');
         const speakerButton = createTTSButton(tweetText, result);
         speakerContainer.appendChild(speakerButton);
     }
@@ -82,15 +82,15 @@ function showFactCheckResult(tweet, result) {
     // Find tweet text container and append below it
     const tweetTextContainer = tweet.querySelector(SELECTORS.TWEET_TEXT);
     if (tweetTextContainer && tweetTextContainer.parentElement) {
-        console.log('TruthLens: Found tweet text container, appending to parent');
+        console.log('ForReal: Found tweet text container, appending to parent');
         tweetTextContainer.parentElement.appendChild(overlay);
     } else {
         // Fallback: append to tweet article
-        console.log('TruthLens: Using fallback - appending to tweet article');
+        console.log('ForReal: Using fallback - appending to tweet article');
         tweet.appendChild(overlay);
     }
 
-    console.log('TruthLens: Overlay appended', overlay);
+    console.log('ForReal: Overlay appended', overlay);
 }
 
 /**
@@ -100,10 +100,10 @@ function showFactCheckResult(tweet, result) {
  */
 function showGenericOverlay(result, claimText = null) {
     // Remove existing overlay
-    removeElementById('truthlens-generic-overlay');
+    removeElementById('forreal-generic-overlay');
 
-    const overlay = createElement('div', 'truthlens-overlay truthlens-fixed-overlay');
-    overlay.id = 'truthlens-generic-overlay';
+    const overlay = createElement('div', 'forreal-overlay forreal-fixed-overlay');
+    overlay.id = 'forreal-generic-overlay';
 
     // Determine styling
     let labelClass = 'neutral';
@@ -122,30 +122,30 @@ function showGenericOverlay(result, claimText = null) {
     const biasHTML = result.isLoading ? '' : buildBiasHTML(result);
 
     overlay.innerHTML = `
-    <div class="truthlens-header">
-      <span class="truthlens-label truthlens-label-${labelClass}">
-        ${result.isLoading ? '<span class="truthlens-spinner"></span> Analyzing' : labelText}
+    <div class="forreal-header">
+      <span class="forreal-label forreal-label-${labelClass}">
+        ${result.isLoading ? '<span class="forreal-spinner"></span> Analyzing' : labelText}
       </span>
-      <div class="truthlens-header-buttons">
-        ${claimText && !result.isLoading && !result.error ? '<span id="truthlens-speaker-container"></span>' : ''}
-        <button class="truthlens-close">×</button>
+      <div class="forreal-header-buttons">
+        ${claimText && !result.isLoading && !result.error ? '<span id="forreal-speaker-container"></span>' : ''}
+        <button class="forreal-close">×</button>
       </div>
     </div>
-    <div class="truthlens-body">
+    <div class="forreal-body">
       ${biasHTML}
-      <p class="truthlens-explanation">${result.explanation}</p>
+      <p class="forreal-explanation">${result.explanation}</p>
       ${sourcesHTML}
     </div>
   `;
 
     // Close handler
-    overlay.querySelector('.truthlens-close').addEventListener('click', () => {
+    overlay.querySelector('.forreal-close').addEventListener('click', () => {
         overlay.remove();
     });
 
     // Add TTS button if applicable
     if (claimText && !result.isLoading && !result.error) {
-        const speakerContainer = overlay.querySelector('#truthlens-speaker-container');
+        const speakerContainer = overlay.querySelector('#forreal-speaker-container');
         if (speakerContainer) {
             const speakerButton = createTTSButton(claimText, result);
             speakerContainer.appendChild(speakerButton);
@@ -163,10 +163,10 @@ function showGenericOverlay(result, claimText = null) {
 function buildSourcesHTML(sources) {
     if (!sources || sources.length === 0) return '';
 
-    let html = '<div class="truthlens-sources">';
+    let html = '<div class="forreal-sources">';
     sources.forEach(source => {
-        const dateStr = source.published_date ? `<span class="truthlens-date">${source.published_date}</span> ` : '';
-        html += `<div class="truthlens-source-item">${dateStr}<a href="${source.url}" target="_blank" rel="noopener noreferrer" class="truthlens-source-link">${source.title || source.url}</a></div>`;
+        const dateStr = source.published_date ? `<span class="forreal-date">${source.published_date}</span> ` : '';
+        html += `<div class="forreal-source-item">${dateStr}<a href="${source.url}" target="_blank" rel="noopener noreferrer" class="forreal-source-link">${source.title || source.url}</a></div>`;
     });
     html += '</div>';
     return html;
@@ -182,7 +182,7 @@ function buildBiasHTML(result) {
     if (result.label && result.label.toLowerCase() !== 'misleading') return '';
 
     const biasLevel = result.bias.toLowerCase() === 'likely' ? 'Likely bias' : 'Potential bias';
-    return `<div class="truthlens-bias">⚠️ ${biasLevel} detected in this post</div>`;
+    return `<div class="forreal-bias">⚠️ ${biasLevel} detected in this post</div>`;
 }
 
 /**
@@ -192,7 +192,7 @@ function buildBiasHTML(result) {
 function setupOverlayEventHandlers(overlay) {
     overlay.addEventListener('click', (e) => {
         // Allow links to work
-        if (e.target.classList.contains('truthlens-source-link') || e.target.tagName === 'A') {
+        if (e.target.classList.contains('forreal-source-link') || e.target.tagName === 'A') {
             return; // Let the link click through
         }
         stopEvent(e);

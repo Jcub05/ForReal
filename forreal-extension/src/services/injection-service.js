@@ -1,14 +1,14 @@
 // Injection Service - Handles icon injection and DOM observation
 
 /**
- * Initialize the TruthLens extension
+ * Initialize the ForReal extension
  */
 function init() {
-    console.log('TruthLens: Initializing...');
+    console.log('ForReal: Initializing...');
 
     // Check if we are on X/Twitter
     if (!isTwitter()) {
-        console.log('TruthLens: Not on Twitter/X, extension not active');
+        console.log('ForReal: Not on Twitter/X, extension not active');
         return;
     }
 
@@ -32,7 +32,7 @@ function init() {
 
     // Also listen for browser back/forward
     window.addEventListener('popstate', () => {
-        console.log('TruthLens: Navigation detected (popstate), re-injecting icons');
+        console.log('ForReal: Navigation detected (popstate), re-injecting icons');
         setTimeout(() => injectFactCheckIcons(), CONFIG.NAVIGATION_DELAY);
         setTimeout(() => injectFactCheckIcons(), CONFIG.NAVIGATION_DELAY * 2);
     });
@@ -45,7 +45,7 @@ function init() {
     // Listen for messages from background script (Context Menu)
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         if (request.action === "verify_selection") {
-            console.log("TruthLens: Verifying selection:", request.text);
+            console.log("ForReal: Verifying selection:", request.text);
             handleSelectionVerification(request.text);
         }
     });
@@ -56,7 +56,7 @@ function init() {
 
     // Close FAB on click outside
     document.addEventListener('mousedown', (e) => {
-        if (!e.target.classList.contains('truthlens-fab') && !e.target.closest('.truthlens-fab')) {
+        if (!e.target.classList.contains('forreal-fab') && !e.target.closest('.forreal-fab')) {
             removeFloatingButton();
         }
     });
@@ -70,7 +70,7 @@ function setupNavigationObserver() {
     new MutationObserver(() => {
         const url = location.href;
         if (url !== lastUrl) {
-            console.log('TruthLens: URL changed, re-injecting icons');
+            console.log('ForReal: URL changed, re-injecting icons');
             lastUrl = url;
             // Delay to allow Twitter to render new content
             setTimeout(() => injectFactCheckIcons(), CONFIG.NAVIGATION_DELAY);
@@ -94,7 +94,7 @@ function injectFactCheckIcons() {
         }
 
         // Check if we already injected our icon
-        const existingButton = actionBar.querySelector('.truthlens-button');
+        const existingButton = actionBar.querySelector('.forreal-button');
 
         // Verify the button is actually in the DOM and attached
         if (existingButton && existingButton.isConnected) {
@@ -102,12 +102,12 @@ function injectFactCheckIcons() {
         }
 
         // If button exists but is disconnected, remove the marker
-        if (tweet.hasAttribute('data-truthlens-processed') && !existingButton) {
-            tweet.removeAttribute('data-truthlens-processed');
+        if (tweet.hasAttribute('data-forreal-processed') && !existingButton) {
+            tweet.removeAttribute('data-forreal-processed');
         }
 
         // Skip if already processed and button exists
-        if (tweet.hasAttribute('data-truthlens-processed') && existingButton) {
+        if (tweet.hasAttribute('data-forreal-processed') && existingButton) {
             return;
         }
 
@@ -118,7 +118,7 @@ function injectFactCheckIcons() {
         const factCheckButton = createFactCheckButton(tweet, tweetId);
 
         // Mark the tweet as processed to avoid re-injection
-        tweet.setAttribute('data-truthlens-processed', 'true');
+        tweet.setAttribute('data-forreal-processed', 'true');
 
         actionBar.appendChild(factCheckButton);
     });

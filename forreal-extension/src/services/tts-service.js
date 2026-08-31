@@ -7,7 +7,7 @@
  * @returns {HTMLButtonElement} - Speaker button element
  */
 function createTTSButton(claim, result) {
-    const speakerButton = createElement('button', 'truthlens-speaker-btn');
+    const speakerButton = createElement('button', 'forreal-speaker-btn');
     speakerButton.title = 'Listen to fact check';
     speakerButton.innerHTML = SPEAKER_ICON;
 
@@ -21,13 +21,13 @@ function createTTSButton(claim, result) {
             currentAudio.pause();
             currentAudio.currentTime = 0;
             currentAudio = null;
-            speakerButton.classList.remove('truthlens-speaker-playing');
+            speakerButton.classList.remove('forreal-speaker-playing');
             return;
         }
 
         try {
             // Show loading state
-            speakerButton.classList.add('truthlens-speaker-loading');
+            speakerButton.classList.add('forreal-speaker-loading');
 
             // Get audio from backend
             const audioBlob = await generateTTS(claim, result);
@@ -36,19 +36,19 @@ function createTTSButton(claim, result) {
             // Create and play audio
             currentAudio = new Audio(audioUrl);
 
-            speakerButton.classList.remove('truthlens-speaker-loading');
-            speakerButton.classList.add('truthlens-speaker-playing');
+            speakerButton.classList.remove('forreal-speaker-loading');
+            speakerButton.classList.add('forreal-speaker-playing');
 
             currentAudio.onended = () => {
-                speakerButton.classList.remove('truthlens-speaker-playing');
+                speakerButton.classList.remove('forreal-speaker-playing');
                 URL.revokeObjectURL(audioUrl);
                 currentAudio = null;
             };
 
             currentAudio.onerror = () => {
                 console.error('🔊 TTS: Audio playback error');
-                speakerButton.classList.remove('truthlens-speaker-playing');
-                speakerButton.classList.remove('truthlens-speaker-loading');
+                speakerButton.classList.remove('forreal-speaker-playing');
+                speakerButton.classList.remove('forreal-speaker-loading');
                 URL.revokeObjectURL(audioUrl);
                 currentAudio = null;
             };
@@ -58,7 +58,7 @@ function createTTSButton(claim, result) {
 
         } catch (error) {
             console.error('🔊 TTS error:', error);
-            speakerButton.classList.remove('truthlens-speaker-loading');
+            speakerButton.classList.remove('forreal-speaker-loading');
             alert('Unable to generate audio. Please check if ElevenLabs API is configured.');
         }
     });

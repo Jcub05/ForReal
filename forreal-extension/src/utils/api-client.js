@@ -6,8 +6,8 @@
  * @returns {Promise<Object>} - Fact-check result
  */
 async function factCheckTweet(text) {
-    console.log('TruthLens: Fetching from:', API_ENDPOINT);
-    console.log('TruthLens: Request body:', { text });
+    console.log('ForReal: Fetching from:', API_ENDPOINT);
+    console.log('ForReal: Request body:', { text });
 
     // Get user ID for rate limiting
     const userId = await getUserId();
@@ -21,12 +21,12 @@ async function factCheckTweet(text) {
         body: JSON.stringify({ text })
     });
 
-    console.log('TruthLens: Response status:', response.status);
+    console.log('ForReal: Response status:', response.status);
 
     // Handle rate limit exceeded
     if (response.status === 429) {
         const errorData = await response.json();
-        console.warn('TruthLens: Rate limit exceeded:', errorData);
+        console.warn('ForReal: Rate limit exceeded:', errorData);
         throw new Error('RATE_LIMIT_EXCEEDED');
     }
 
@@ -35,7 +35,7 @@ async function factCheckTweet(text) {
     }
 
     const data = await response.json();
-    console.log('TruthLens: Response data:', data);
+    console.log('ForReal: Response data:', data);
     return data;
 }
 

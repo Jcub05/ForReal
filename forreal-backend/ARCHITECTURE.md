@@ -1,10 +1,10 @@
-# TruthLens (ForReal) - Full-Stack Architecture Documentation
+# ForReal (ForReal) - Full-Stack Architecture Documentation
 
 ## 📁 Project Structure
 
-### Backend (truthlens-backend)
+### Backend (forreal-backend)
 ```
-truthlens-backend/
+forreal-backend/
 ├── app/
 │   ├── __init__.py              # Package initialization
 │   ├── main.py                  # FastAPI app entry point
@@ -38,9 +38,9 @@ truthlens-backend/
 └── README.md
 ```
 
-### Frontend (truthlens-extension)
+### Frontend (forreal-extension)
 ```
-truthlens-extension/
+forreal-extension/
 ├── src/
 │   ├── components/       # UI Logic (e.g., fact-check-button.js)
 │   ├── services/         # Core features (injection, TTS, fact-checker)
@@ -92,19 +92,19 @@ truthlens-extension/
 
 ### **Option 1: Using new structure (recommended)**
 ```bash
-cd truthlens-backend
+cd forreal-backend
 python -m app.main
 ```
 
 ### **Option 2: Using legacy entry point**
 ```bash
-cd truthlens-backend
+cd forreal-backend
 python main.py
 ```
 
 ### **Option 3: Using uvicorn directly**
 ```bash
-cd truthlens-backend
+cd forreal-backend
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 

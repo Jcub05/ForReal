@@ -1,4 +1,4 @@
-// TruthLens Content Script - Entry Point and Orchestrator
+// ForReal Content Script - Entry Point and Orchestrator
 // All modules are loaded via manifest.json in the correct order
 
 // Initialize when DOM is ready

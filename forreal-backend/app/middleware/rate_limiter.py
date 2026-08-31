@@ -1,4 +1,4 @@
-"""Rate limiting middleware for TruthLens API."""
+"""Rate limiting middleware for ForReal API."""
 from fastapi import Request, HTTPException
 from fastapi.responses import JSONResponse
 from datetime import datetime, timedelta

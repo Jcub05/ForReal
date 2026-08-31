@@ -12,13 +12,13 @@
 ## Quick Commands To Run
 
 ```powershell
-# Activate venv (in truthlens-backend dir)
+# Activate venv (in forreal-backend dir)
 .\venv\Scripts\Activate.ps1
 
-# Install dependencies (in truthlens-backend dir)
+# Install dependencies (in forreal-backend dir)
 pip install -r requirements.txt
 
-# Run backend (in truthlens-backend dir)
+# Run backend (in forreal-backend dir)
 python -m uvicorn app.main:app --reload --port 8000
 
 # Deactivate venv
@@ -36,7 +36,7 @@ HIVE_API_KEY=your_hive_key_here  # Optional for AI detection
 
 ### 5. Run the Backend Server
 ```powershell
-# Make sure you're in truthlens-backend directory with (venv) active
+# Make sure you're in forreal-backend directory with (venv) active
 python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
@@ -60,7 +60,7 @@ Toggle "Developer mode" in the top-right corner
 
 ### 3. Load the Extension
 1. Click "Load unpacked"
-2. Navigate to: `QHacks-2026/truthlens-extension`
+2. Navigate to: `QHacks-2026/forreal-extension`
 3. Select the folder
 
 ### 4. Verify Installation

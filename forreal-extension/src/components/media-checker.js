@@ -10,10 +10,10 @@ function createMediaCheckHTML(tweet, imageCount) {
     if (imageCount === 0) return '';
 
     return `
-    <button class="truthlens-media-check-btn" data-image-count="${imageCount}">
+    <button class="forreal-media-check-btn" data-image-count="${imageCount}">
       🖼️ Check if image is AI
     </button>
-    <div class="truthlens-media-result"></div>
+    <div class="forreal-media-result"></div>
   `;
 }
 
@@ -23,13 +23,13 @@ function createMediaCheckHTML(tweet, imageCount) {
  * @param {HTMLElement} tweet - Tweet element
  */
 function attachMediaCheckHandlers(overlay, tweet) {
-    const mediaCheckBtns = overlay.querySelectorAll('.truthlens-media-check-btn');
+    const mediaCheckBtns = overlay.querySelectorAll('.forreal-media-check-btn');
 
     mediaCheckBtns.forEach(btn => {
         btn.addEventListener('click', async (e) => {
             stopEvent(e);
 
-            const resultDiv = overlay.querySelector('.truthlens-media-result');
+            const resultDiv = overlay.querySelector('.forreal-media-result');
             const imageCount = parseInt(e.target.getAttribute('data-image-count'));
             const imageIndex = e.target.getAttribute('data-image-index');
 
@@ -54,20 +54,20 @@ function attachMediaCheckHandlers(overlay, tweet) {
  * @param {HTMLElement} tweet - Tweet element
  */
 function expandToImageSelection(button, imageCount, overlay, tweet) {
-    console.log('TruthLens: Expanding to show', imageCount, 'image selection buttons');
+    console.log('ForReal: Expanding to show', imageCount, 'image selection buttons');
 
-    let numberedButtonsHTML = '<div class="truthlens-media-check-container">';
+    let numberedButtonsHTML = '<div class="forreal-media-check-container">';
     numberedButtonsHTML += '<div style="font-size: 13px; color: rgb(83, 100, 113); margin-bottom: 6px;">Select image to check:</div>';
     for (let i = 0; i < imageCount; i++) {
-        numberedButtonsHTML += `<button class="truthlens-media-check-btn truthlens-media-check-btn-small" data-image-index="${i}">Image ${i + 1}</button> `;
+        numberedButtonsHTML += `<button class="forreal-media-check-btn forreal-media-check-btn-small" data-image-index="${i}">Image ${i + 1}</button> `;
     }
     numberedButtonsHTML += '</div>';
 
     button.outerHTML = numberedButtonsHTML;
 
     // Attach click handlers to new buttons
-    const resultDiv = overlay.querySelector('.truthlens-media-result');
-    const newBtns = overlay.querySelectorAll('.truthlens-media-check-btn');
+    const resultDiv = overlay.querySelector('.forreal-media-result');
+    const newBtns = overlay.querySelectorAll('.forreal-media-check-btn');
     newBtns.forEach(newBtn => {
         newBtn.addEventListener('click', async (e2) => {
             stopEvent(e2);
@@ -84,10 +84,10 @@ function expandToImageSelection(button, imageCount, overlay, tweet) {
  * @param {HTMLElement} resultDiv - Result display element
  */
 async function performMediaCheck(tweet, selectedIndex, resultDiv) {
-    resultDiv.innerHTML = '<div class="truthlens-loading-small">Checking...</div>';
+    resultDiv.innerHTML = '<div class="forreal-loading-small">Checking...</div>';
 
     try {
-        console.log('🔍 TruthLens: Starting media check...');
+        console.log('🔍 ForReal: Starting media check...');
         console.log('Selected image index:', selectedIndex);
 
         // Get all images in the tweet
@@ -95,7 +95,7 @@ async function performMediaCheck(tweet, selectedIndex, resultDiv) {
 
         if (allImages.length === 0) {
             console.error('❌ No images found in tweet');
-            resultDiv.innerHTML = '<div class="truthlens-error">Could not find images</div>';
+            resultDiv.innerHTML = '<div class="forreal-error">Could not find images</div>';
             return;
         }
 
@@ -103,7 +103,7 @@ async function performMediaCheck(tweet, selectedIndex, resultDiv) {
         const mediaElement = allImages[selectedIndex];
         if (!mediaElement) {
             console.error('❌ Invalid image index:', selectedIndex);
-            resultDiv.innerHTML = '<div class="truthlens-error">Image not found</div>';
+            resultDiv.innerHTML = '<div class="forreal-error">Image not found</div>';
             return;
         }
 
@@ -112,7 +112,7 @@ async function performMediaCheck(tweet, selectedIndex, resultDiv) {
 
         if (!mediaUrl) {
             console.error('❌ Could not extract media URL from tweet');
-            resultDiv.innerHTML = '<div class="truthlens-error">Could not extract image URL</div>';
+            resultDiv.innerHTML = '<div class="forreal-error">Could not extract image URL</div>';
             return;
         }
 
@@ -123,12 +123,12 @@ async function performMediaCheck(tweet, selectedIndex, resultDiv) {
         const icon = data.ai_generated ? '🤖' : '👤';
         const verdict = data.ai_generated ? 'AI-generated' : 'Human-created';
         const confidencePercent = Math.round(data.confidence * 100);
-        resultDiv.innerHTML = `<div class="truthlens-media-result-text">${icon} ${verdict} (${confidencePercent}% confidence)</div>`;
+        resultDiv.innerHTML = `<div class="forreal-media-result-text">${icon} ${verdict} (${confidencePercent}% confidence)</div>`;
         console.log('✓ Media check complete');
 
     } catch (error) {
         console.error('❌ Media check error:', error);
         console.error('Error details:', error.message);
-        resultDiv.innerHTML = `<div class="truthlens-error">Check failed: ${error.message}</div>`;
+        resultDiv.innerHTML = `<div class="forreal-error">Check failed: ${error.message}</div>`;
     }
 }

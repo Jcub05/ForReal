@@ -17,7 +17,7 @@ function handleTextSelection(e) {
 
         // Don't show if we already have the button for this selection
         const r1 = selection.getRangeAt(0).getBoundingClientRect();
-        const existingBtn = document.getElementById('truthlens-fab');
+        const existingBtn = document.getElementById('forreal-fab');
         if (existingBtn && existingBtn.dataset.text === text) {
             return;
         }
@@ -34,8 +34,8 @@ function handleTextSelection(e) {
 function showFloatingButton(rect, text) {
     removeFloatingButton();
 
-    const btn = createElement('div', 'truthlens-fab');
-    btn.id = 'truthlens-fab';
+    const btn = createElement('div', 'forreal-fab');
+    btn.id = 'forreal-fab';
     btn.innerHTML = MAGNIFY_ICON;
     btn.title = 'Verify with ForReal';
     btn.dataset.text = text;
@@ -64,5 +64,5 @@ function showFloatingButton(rect, text) {
  * Remove Floating Action Button
  */
 function removeFloatingButton() {
-    removeElementById('truthlens-fab');
+    removeElementById('forreal-fab');
 }

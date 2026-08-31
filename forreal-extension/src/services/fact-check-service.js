@@ -9,7 +9,7 @@
  */
 async function handleFactCheck(tweet, tweetText, button) {
     if (!tweetText) {
-        console.log('TruthLens: No text found');
+        console.log('ForReal: No text found');
         return {
             label: 'Unverifiable',
             explanation: 'This tweet contains no text to fact-check.',
@@ -19,12 +19,12 @@ async function handleFactCheck(tweet, tweetText, button) {
     }
 
     try {
-        console.log('TruthLens: Calling API...');
+        console.log('ForReal: Calling API...');
         const result = await factCheckTweet(tweetText);
-        console.log('TruthLens: Got result:', result);
+        console.log('ForReal: Got result:', result);
         return result;
     } catch (error) {
-        console.error('TruthLens error:', error);
+        console.error('ForReal error:', error);
         return {
             label: 'Error',
             explanation: 'Unable to fact-check at this time. Please try again.',
@@ -51,7 +51,7 @@ async function handleSelectionVerification(text) {
         const result = await factCheckTweet(text);
         showGenericOverlay(result, text);
     } catch (error) {
-        console.error("TruthLens error:", error);
+        console.error("ForReal error:", error);
         showGenericOverlay({
             label: "Error",
             explanation: "Unable to verify text. Please try again.",

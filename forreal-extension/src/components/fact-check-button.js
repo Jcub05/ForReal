@@ -7,7 +7,7 @@
  * @returns {HTMLDivElement} - Button element
  */
 function createFactCheckButton(tweet, tweetId) {
-    const button = createElement('div', 'truthlens-button');
+    const button = createElement('div', 'forreal-button');
     button.innerHTML = MAGNIFY_ICON;
     button.title = 'Fact-check this tweet';
 
@@ -19,10 +19,10 @@ function createFactCheckButton(tweet, tweetId) {
 
         // If already checked, show the full overlay
         if (isChecked && factCheckResult) {
-            console.log('TruthLens: Showing full details', factCheckResult);
+            console.log('ForReal: Showing full details', factCheckResult);
 
             // Remove any existing overlay first
-            const existingOverlay = tweet.querySelector('.truthlens-overlay');
+            const existingOverlay = tweet.querySelector('.forreal-overlay');
             if (existingOverlay) {
                 existingOverlay.remove();
                 return; // If clicking to close, just return
@@ -32,20 +32,20 @@ function createFactCheckButton(tweet, tweetId) {
             return;
         }
 
-        console.log('TruthLens: Button clicked!');
+        console.log('ForReal: Button clicked!');
 
         // Show loading state
-        button.classList.add('truthlens-loading');
+        button.classList.add('forreal-loading');
 
         // Extract tweet text
         const tweetText = extractTweetText(tweet);
-        console.log('TruthLens: Extracted text:', tweetText);
+        console.log('ForReal: Extracted text:', tweetText);
 
         // Perform fact-check
         factCheckResult = await handleFactCheck(tweet, tweetText, button);
         updateButtonIcon(button, factCheckResult.label);
         isChecked = true;
-        button.classList.remove('truthlens-loading');
+        button.classList.remove('forreal-loading');
     });
 
     return button;
@@ -57,26 +57,26 @@ function createFactCheckButton(tweet, tweetId) {
  * @param {string} label - Result label
  */
 function updateButtonIcon(button, label) {
-    button.classList.remove('truthlens-loading');
-    button.classList.add('truthlens-checked');
+    button.classList.remove('forreal-loading');
+    button.classList.add('forreal-checked');
 
     const normalizedLabel = label.toLowerCase();
 
     if (normalizedLabel === 'true') {
         button.innerHTML = CHECK_ICON;
         button.title = 'True - Click for details';
-        button.classList.add('truthlens-true');
+        button.classList.add('forreal-true');
     } else if (normalizedLabel === 'false') {
         button.innerHTML = X_ICON;
         button.title = 'False - Click for details';
-        button.classList.add('truthlens-false');
+        button.classList.add('forreal-false');
     } else if (normalizedLabel === 'misleading') {
         button.innerHTML = WARNING_ICON;
         button.title = 'Misleading - Click for details';
-        button.classList.add('truthlens-misleading');
+        button.classList.add('forreal-misleading');
     } else {
         button.innerHTML = QUESTION_ICON;
         button.title = 'Unverifiable - Click for details';
-        button.classList.add('truthlens-unverifiable');
+        button.classList.add('forreal-unverifiable');
     }
 }

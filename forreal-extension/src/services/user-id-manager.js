@@ -8,13 +8,13 @@ async function getUserId() {
     return new Promise((resolve) => {
         chrome.storage.local.get(['userId'], (result) => {
             if (result.userId) {
-                console.log('TruthLens: Retrieved existing user ID');
+                console.log('ForReal: Retrieved existing user ID');
                 resolve(result.userId);
             } else {
                 // Generate new UUID
                 const newUserId = crypto.randomUUID();
                 chrome.storage.local.set({ userId: newUserId }, () => {
-                    console.log('TruthLens: Generated new user ID:', newUserId);
+                    console.log('ForReal: Generated new user ID:', newUserId);
                     resolve(newUserId);
                 });
             }

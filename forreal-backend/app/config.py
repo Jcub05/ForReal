@@ -1,5 +1,5 @@
 """
-Configuration management for TruthLens API.
+Configuration management for ForReal API.
 Loads environment variables and provides configuration objects.
 """
 import os
